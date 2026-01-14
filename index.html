@@ -16,38 +16,41 @@
       font-family: "Segoe UI", sans-serif;
       background: #F7EDE2;
       color: #8C1A1A;
-      display: flex;
-      justify-content: center;
-      min-height: 100vh;
     }
 
-    .logo {
-      position: fixed;
-      top: 80px;
-      left: 80px;
-      width: 600px;
-      height: 600px;
-      object-fit: contain;
-      z-index: 1000;
+    /* 3-Spalten-Layout */
+    .layout-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      padding: 40px 0;
+    }
+
+    /* Logos links & rechts */
+    .logo-side {
+      width: 350px;
+      height: auto;
+      margin: 0 20px;
+      flex-shrink: 0;
     }
 
     .container {
-      width: 100%;
+      flex: 1;
       max-width: 900px;
       padding: 20px;
     }
 
+    /* Karte etwas breiter & gleich hoch */
     .card {
       background: #fffdf8;
-      padding: 80px;
+      padding: 60px;
       border-radius: 18px;
       box-shadow: 0 0 30px rgba(160, 100, 60, 0.35);
       border: 2px solid #f4d7b7;
-
-      /* Ausrichtung zur Logo-Position */
-      margin-top: 60px;         /* 20px container-padding + 60px = 80px wie das Logo */
-      height: 600px;            /* gleiche Höhe wie das Logo */
-      overflow-y: auto;         /* scrollen, falls Inhalt höher ist */
+      min-height: 500px;
+      max-height: 650px;
+      overflow-y: auto;
     }
 
     h1 {
@@ -61,7 +64,6 @@
       display: block;
     }
 
-    /* Eingabefelder verkleinert */
     input {
       width: 300px;
       max-width: 100%;
@@ -136,56 +138,55 @@
       font-weight: bold;
     }
 
-    @media (max-width: 600px) {
-      .logo {
-        top: 20px;
-        left: 20px;
-        width: 360px;
-        height: 360px;
+    /* Responsive: Logos nach oben/unten */
+    @media (max-width: 900px) {
+      .layout-row {
+        flex-direction: column;
+      }
+
+      .logo-side {
+        width: 250px;
+        margin: 20px 0;
       }
 
       .card {
-        margin-top: 20px;
-        height: auto;          /* auf Mobile nicht fix erzwingen */
-      }
-
-      input {
-        width: 100%;
-      }
-
-      #videos video {
-        width: 100%;
+        width: 90%;
+        padding: 40px;
       }
     }
+
   </style>
 </head>
 
 <body>
 
-  <img src="logo_proto_odali.png" alt="Odali Logo Prototyp" class="logo">
+  <div class="layout-row">
+    <img src="logo_proto_odali.png" alt="Odali Logo Links" class="logo-side">
 
-  <div class="container">
-    <div class="card">
+    <div class="container">
+      <div class="card">
 
-      <h1>odali video-thirrje</h1>
-      <p>shenoh <strong>emrin tond</strong> und te njehitin emen te <strong>nji odes</strong> --- Tungat!</p>
+        <h1>odali video-thirrje</h1>
+        <p>shenoh <strong>emrin tond</strong> und te njehitin emen te <strong>nji odes</strong> --- Tungat!</p>
 
-      <label for="identity">emeni perdorus</label>
-      <input id="identity" placeholder="p.sh. Dona">
+        <label for="identity">emeni perdorus</label>
+        <input id="identity" placeholder="p.sh. Dona">
 
-      <label for="roomName">emeni odes</label>
-      <input id="roomName" placeholder="p.sh. oda e gashjanve">
+        <label for="roomName">emeni odes</label>
+        <input id="roomName" placeholder="p.sh. oda e gashjanve">
 
-      <button id="joinBtn" class="btn-primary">🚀 Bujrum!</button>
-      <button id="leaveBtn" class="btn-secondary" disabled>⏹️ Izen!</button>
+        <button id="joinBtn" class="btn-primary">🚀 Bujrum!</button>
+        <button id="leaveBtn" class="btn-secondary" disabled>⏹️ Izen!</button>
 
-      <div id="status">Pa kyqun.</div>
-      <div id="error" class="error"></div>
+        <div id="status">Pa kyqun.</div>
+        <div id="error" class="error"></div>
 
-      <!-- ID korrigiert: "videos" statt "videot" -->
-      <div id="videos"></div>
+        <div id="videos"></div>
 
+      </div>
     </div>
+
+    <img src="logo_proto_odali.png" alt="Odali Logo Rechts" class="logo-side">
   </div>
 
   <!-- Twilio JS SDK -->
@@ -283,12 +284,10 @@
       setStatus("I lidhun me: " + room.name);
       leaveBtn.disabled = false;
 
-      // Lokale Tracks anzeigen
       room.localParticipant.tracks.forEach(pub => {
         if (pub.track) attachTrack(pub.track);
       });
 
-      // Bereits verbundene Teilnehmer
       room.participants.forEach(p => {
         p.tracks.forEach(pub => {
           if (pub.isSubscribed && pub.track) attachTrack(pub.track);
@@ -296,17 +295,14 @@
         p.on("trackSubscribed", attachTrack);
       });
 
-      // Neue Teilnehmer
       room.on("participantConnected", p => {
         p.on("trackSubscribed", attachTrack);
       });
 
-      // Teilnehmer geht raus
       room.on("participantDisconnected", p => {
         detachTracks(p);
       });
 
-      // Du gehst raus / Disconnect
       room.on("disconnected", () => {
         setStatus("I pa kyqun.");
         videosDiv.innerHTML = "";
@@ -328,4 +324,3 @@
 
 </body>
 </html>
-
