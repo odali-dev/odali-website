@@ -238,24 +238,24 @@ f
       const roomName = roomNameInput.value.trim();
 
       if (!identity || !roomName) {
-        showError("Bitte alles ausfüllen!");
+        showError("shenoni te gjitha t'dhanat!");
         return;
       }
 
       joinBtn.disabled = true;
-      setStatus("Hole Token…");
+      setStatus("tu e grabit tokenin…");
 
       let token;
       try {
         token = await getToken(identity, roomName);
       } catch (err) {
         console.error(err);
-        showError("Token-Server nicht erreichbar oder Fehler: " + err.message);
+        showError("token-serveri nuk reagon ose ndonje gabim" + err.message);
         joinBtn.disabled = false;
         return;
       }
 
-      setStatus("Verbinde…");
+      setStatus("Tu u kyq...");
 
       try {
         room = await Twilio.Video.connect(token, {
@@ -264,12 +264,12 @@ f
           audio: true
         });
       } catch (err) {
-        showError("Konnte nicht beitreten: " + err.message);
+        showError("Nuk osht kyq: " + err.message);
         joinBtn.disabled = false;
         return;
       }
 
-      setStatus("Verbunden mit: " + room.name);
+      setStatus("I lidhun me: " + room.name);
       leaveBtn.disabled = false;
 
       room.localParticipant.tracks.forEach(pub => {
@@ -292,7 +292,7 @@ f
       });
 
       room.on("disconnected", () => {
-        setStatus("Nicht verbunden.");
+        setStatus("I pa kyqun.");
         videosDiv.innerHTML = "";
         leaveBtn.disabled = true;
         joinBtn.disabled = false;
