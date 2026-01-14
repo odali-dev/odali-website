@@ -362,7 +362,8 @@
         <h1>odali video-thirrje</h1>
         <p>
           shenoh <strong>emrin tond</strong> edhe te njejtin emen te <strong>nji odes</strong> --- Tungat!<br>
-          <small id="currentUserHint"></small>
+          <small id="currentUserHint"></small><br>
+          <small id="currentRoomHint"></small>
         </p>
 
         <label for="identity">emeni perdorus</label>
@@ -385,7 +386,8 @@
         <h2 class="friends-section-title">shoqnia jote 👥</h2>
         <p class="friends-hint">
           Çdo kush ka <strong>username t'odalis</strong> (qysh e ka bo n'login.html).  
-          Këtu dërgon <strong>kërkesa për shoqni</strong>, i pranon ato dhe prej listës mrena i thirr.
+          Këtu dërgon <strong>kërkesa për shoqni</strong>, i pranon ato dhe prej listës i thirr.
+          Nëse je veç n'odë, mundesh me i shty shokët direkt <strong>në të njejtën odë</strong>.
         </p>
 
         <!-- Extra Feld: Freundschaftsanfrage schicken -->
@@ -408,7 +410,7 @@
         </div>
 
         <!-- Freunde-Liste -->
-        <div class="subsection-title">Freunde (kannst du direkt anrufen)</div>
+        <div class="subsection-title">Freunde (kannst du direkt anrufen / in die laufende odë holen)</div>
         <ul id="friendsList" class="friends-list"></ul>
 
       </div>
@@ -436,7 +438,9 @@
     let room = null;
     let socket = null;
     let currentUser = null;
+    let currentRoomName = null;
     let incomingCallData = null;
+    let lastFriendsData = { friends: [], incoming: [], outgoing: [] };
 
     const joinBtn = document.getElementById("joinBtn");
     const leaveBtn = document.getElementById("leaveBtn");
@@ -446,6 +450,7 @@
     const errorEl = document.getElementById("error");
     const videosDiv = document.getElementById("videos");
     const currentUserHint = document.getElementById("currentUserHint");
+    const currentRoomHint = document.getElementById("currentRoomHint");
 
     const friendRequestNameInput = document.getElementById("friendRequestName");
     const sendFriendRequestBtn = document.getElementById("sendFriendRequestBtn");
@@ -464,6 +469,14 @@
 
     function showError(msg) {
       errorEl.textContent = msg || "";
+    }
+
+    function updateRoomHint() {
+      if (currentRoomName) {
+        currentRoomHint.textContent = `oda aktive: ${currentRoomName} (mundesh me shtu shokë n'këtë odë)`;
+      } else {
+        currentRoomHint.textContent = "s'ka odë aktive për momentin.";
+      }
     }
 
     function attachTrack(track) {
@@ -531,6 +544,8 @@
         return;
       }
 
+      currentRoomName = room.name;
+      updateRoomHint();
       setStatus("I lidhun me: " + room.name);
       leaveBtn.disabled = false;
 
@@ -558,13 +573,18 @@
         videosDiv.innerHTML = "";
         leaveBtn.disabled = true;
         joinBtn.disabled = false;
+        room = null;
+        currentRoomName = null;
+        updateRoomHint();
+        // Buttons wieder auf "📞 thirre" umschalten
+        renderFriends(lastFriendsData);
       });
     }
 
     function leaveRoom() {
       if (room) {
         room.disconnect();
-        room = null;
+        // rest wird im "disconnected"-Handler erledigt
       }
     }
 
@@ -588,6 +608,7 @@
           console.error(data);
           return;
         }
+        lastFriendsData = data;
         renderFriends(data);
       } catch (err) {
         console.error(err);
@@ -666,8 +687,16 @@
 
         const callBtn = document.createElement('button');
         callBtn.className = 'friend-call-btn';
-        callBtn.textContent = '📞 thirre';
-        callBtn.addEventListener('click', () => startCallWithFriend(friendName));
+
+        if (currentRoomName) {
+          callBtn.textContent = '➕ në odë';
+          callBtn.title = 'Shto këtë shok n\'oden aktuale';
+          callBtn.addEventListener('click', () => inviteFriendToCurrentRoom(friendName));
+        } else {
+          callBtn.textContent = '📞 thirre';
+          callBtn.title = 'Krijo odë t\'re me këtë shok';
+          callBtn.addEventListener('click', () => startCallWithFriend(friendName));
+        }
 
         li.appendChild(metaDiv);
         li.appendChild(callBtn);
@@ -753,9 +782,32 @@
       joinRoom();
     }
 
+    function inviteFriendToCurrentRoom(friendName) {
+      showError("");
+      if (!currentUser) {
+        showError("së pari hy n'login.html që me pas username.");
+        return;
+      }
+      if (!currentRoomName || !room) {
+        showError("s'ka odë aktive për me shtu dikon.");
+        return;
+      }
+
+      if (socket) {
+        socket.emit('callUser', {
+          from: currentUser,
+          to: friendName,
+          roomName: currentRoomName
+        });
+        setStatus(`Ftuat ${friendName} n'oden ${currentRoomName}.`);
+      } else {
+        showError("s'ka lidhje signaling (socket).");
+      }
+    }
+
     function showIncomingCallPopup(fromUser, roomName) {
       incomingCallData = { fromUser, roomName };
-      callPopupText.textContent = `${fromUser} po t'thirr n'odë. Hy n'oden?`;
+      callPopupText.textContent = `${fromUser} po t'thirr n'odë: ${roomName}. Hy n'oden?`;
       callPopupBackdrop.style.display = 'flex';
     }
 
@@ -848,6 +900,8 @@
       } else {
         currentUserHint.textContent = "S'je i kyqun prej login.html — mundesh me shkru direkt emnin ktu, po s'ke shoqni të lidhne.";
       }
+
+      updateRoomHint();
 
       sendFriendRequestBtn.addEventListener('click', () => {
         const name = friendRequestNameInput.value.trim().toLowerCase();
