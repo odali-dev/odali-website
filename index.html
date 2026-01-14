@@ -43,6 +43,11 @@
       border-radius: 18px;
       box-shadow: 0 0 30px rgba(160, 100, 60, 0.35);
       border: 2px solid #f4d7b7;
+
+      /* Ausrichtung zur Logo-Position */
+      margin-top: 60px;         /* 20px container-padding + 60px = 80px wie das Logo */
+      height: 600px;            /* gleiche Höhe wie das Logo */
+      overflow-y: auto;         /* scrollen, falls Inhalt höher ist */
     }
 
     h1 {
@@ -124,7 +129,7 @@
       margin-top: 8px;
       font-size: 0.9rem;
     }
-f
+
     .error {
       color: #8C1A1A;
       margin-top: 10px;
@@ -137,6 +142,11 @@ f
         left: 20px;
         width: 360px;
         height: 360px;
+      }
+
+      .card {
+        margin-top: 20px;
+        height: auto;          /* auf Mobile nicht fix erzwingen */
       }
 
       input {
@@ -158,7 +168,7 @@ f
     <div class="card">
 
       <h1>odali video thirrje</h1>
-      <p>shenoh <strong>emrin tond</strong> dhe te njehitin emen te <strong>nji odes</strong> --- Tungat!</p>
+      <p>shenoh <strong>emrin tond</strong> und te njehitin emen te <strong>nji odes</strong> --- Tungat!</p>
 
       <label for="identity">emeni perdorus</label>
       <input id="identity" placeholder="p.sh. Dona">
@@ -172,7 +182,8 @@ f
       <div id="status">Pa kyqun.</div>
       <div id="error" class="error"></div>
 
-      <div id="videot"></div>
+      <!-- ID korrigiert: "videos" statt "videot" -->
+      <div id="videos"></div>
 
     </div>
   </div>
@@ -250,7 +261,7 @@ f
         token = await getToken(identity, roomName);
       } catch (err) {
         console.error(err);
-        showError("token-serveri nuk reagon ose ndonje gabim" + err.message);
+        showError("token-serveri nuk reagon ose ndonje gabim: " + err.message);
         joinBtn.disabled = false;
         return;
       }
@@ -272,10 +283,12 @@ f
       setStatus("I lidhun me: " + room.name);
       leaveBtn.disabled = false;
 
+      // Lokale Tracks anzeigen
       room.localParticipant.tracks.forEach(pub => {
         if (pub.track) attachTrack(pub.track);
       });
 
+      // Bereits verbundene Teilnehmer
       room.participants.forEach(p => {
         p.tracks.forEach(pub => {
           if (pub.isSubscribed && pub.track) attachTrack(pub.track);
@@ -283,14 +296,17 @@ f
         p.on("trackSubscribed", attachTrack);
       });
 
+      // Neue Teilnehmer
       room.on("participantConnected", p => {
         p.on("trackSubscribed", attachTrack);
       });
 
+      // Teilnehmer geht raus
       room.on("participantDisconnected", p => {
         detachTracks(p);
       });
 
+      // Du gehst raus / Disconnect
       room.on("disconnected", () => {
         setStatus("I pa kyqun.");
         videosDiv.innerHTML = "";
@@ -312,3 +328,4 @@ f
 
 </body>
 </html>
+
