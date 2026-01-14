@@ -2,20 +2,20 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title> odali video-thirrje </title>
+  <title>odali video-thirrje</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <style>
-   {
-    box-sizing: border-box;
+    *, *::before, *::after {
+      box-sizing: border-box;
     }
-    
+
     body {
       margin: 0;
       padding: 0;
       font-family: "Segoe UI", sans-serif;
-      background: #F7EDE2; /* beige */
-      color: #8C1A1A; /* dunkelrot */
+      background: #F7EDE2;
+      color: #8C1A1A;
       display: flex;
       justify-content: center;
       min-height: 100vh;
@@ -25,7 +25,9 @@
       position: fixed;
       top: 160px;
       left: 160px;
-      width: 120px;
+      width: 160px;
+      height: 160px;
+      object-fit: contain;
       z-index: 1000;
     }
 
@@ -54,16 +56,23 @@
       display: block;
     }
 
+    /* Eingabefelder verkleinert */
     input {
-      width: 90%;
+      width: 300px;
+      max-width: 100%;
       padding: 10px 14px;
       border-radius: 12px;
       border: 2px solid #FFFFFF;
-      background: #F2B705; /* Gelb */
+      background: #F2B705;
       font-size: 1rem;
       margin-bottom: 16px;
       outline: none;
       color: #4a2e2b;
+    }
+
+    input::placeholder {
+      color: #4a2e2b;
+      opacity: 0.7;
     }
 
     input:focus {
@@ -81,13 +90,13 @@
     }
 
     .btn-primary {
-      background: #F2B705; /* Gelb passend zum Logo */
+      background: #F2B705;
       color: #8C1A1A;
       font-weight: bold;
     }
 
     .btn-secondary {
-      background: #8C1A1A; /* dunkelrot */
+      background: #8C1A1A;
       color: #FFFFFF;
     }
 
@@ -121,24 +130,40 @@
       margin-top: 10px;
       font-weight: bold;
     }
+
+    @media (max-width: 600px) {
+      .logo {
+        top: 20px;
+        left: 20px;
+        width: 120px;
+        height: 120px;
+      }
+
+      input {
+        width: 100%;
+      }
+
+      #videos video {
+        width: 100%;
+      }
+    }
   </style>
 </head>
 
 <body>
 
-  <!-- LOGO OBEN LINKS -->
   <img src="logo_proto_odali.png" alt="Odali Logo Prototyp" class="logo">
 
   <div class="container">
     <div class="card">
 
-      <h1> odali video thirrje </h1>
+      <h1>odali video thirrje</h1>
       <p>Gib einen <strong>Benutzernamen</strong> und <strong>denselben Roomnamen</strong> ein – und ihr landet im gleichen Videochat.</p>
 
-      <label>Benutzername</label>
+      <label for="identity">Benutzername</label>
       <input id="identity" placeholder="z. B. Max">
 
-      <label>Roomname</label>
+      <label for="roomName">Roomname</label>
       <input id="roomName" placeholder="z. B. familyroom">
 
       <button id="joinBtn" class="btn-primary">🚀 Raum betreten</button>
@@ -201,7 +226,9 @@
 
     function detachTracks(p) {
       p.tracks.forEach(pub => {
-        if (pub.track) pub.track.detach().forEach(e => e.remove());
+        if (pub.track) {
+          pub.track.detach().forEach(e => e.remove());
+        }
       });
     }
 
@@ -251,7 +278,7 @@
 
       room.participants.forEach(p => {
         p.tracks.forEach(pub => {
-          if (pub.isSubscribed) attachTrack(pub.track);
+          if (pub.isSubscribed && pub.track) attachTrack(pub.track);
         });
         p.on("trackSubscribed", attachTrack);
       });
@@ -273,7 +300,10 @@
     }
 
     function leaveRoom() {
-      if (room) room.disconnect();
+      if (room) {
+        room.disconnect();
+        room = null;
+      }
     }
 
     joinBtn.onclick = joinRoom;
@@ -282,4 +312,3 @@
 
 </body>
 </html>
-
