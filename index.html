@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>odali video-thirrje</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <img src="logo-proto-odali.png" alt="Odali Logo Prototyp" class="logo">
 
   <style>
     body {
@@ -12,17 +11,19 @@
       padding: 0;
       font-family: "Segoe UI", sans-serif;
       background: #F7EDE2; /* beige */
-      color: #8C1A1A; /* dunkles rotbraun */
+      color: #8C1A1A; /* dunkelrot */
       display: flex;
       justify-content: center;
       min-height: 100vh;
     }
 
     .logo {
-      width: 120px;      /* oder was dir gefällt */
-      margin: 20px;      /* Abstand vom Rand */
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      width: 120px;
+      z-index: 1000;
     }
-
 
     .container {
       width: 100%;
@@ -40,7 +41,7 @@
 
     h1 {
       margin-top: 0;
-      color: #c0392b; /* warmes rot */
+      color: #8C1A1A;
     }
 
     label {
@@ -54,7 +55,7 @@
       padding: 10px 14px;
       border-radius: 12px;
       border: 2px solid #FFFFFF;
-      background: #F2B705;
+      background: #F2B705; /* Gelb */
       font-size: 1rem;
       margin-bottom: 16px;
       outline: none;
@@ -62,10 +63,8 @@
     }
 
     input:focus {
-      border-color: #FFD23A; /* orange-gelb */
+      border-color: #FFD23A;
       box-shadow: 0 0 4px rgba(230, 126, 34, 0.4);
-      widith: 80px;
-      display: flex;
     }
 
     button {
@@ -78,14 +77,14 @@
     }
 
     .btn-primary {
-      background: #e67e22; /* orange-gelb */
-      color: white;
+      background: #F2B705; /* Gelb passend zum Logo */
+      color: #8C1A1A;
       font-weight: bold;
     }
 
     .btn-secondary {
-      background: #c0392b; /* rot */
-      color: white;
+      background: #8C1A1A; /* dunkelrot */
+      color: #FFFFFF;
     }
 
     button:disabled {
@@ -114,14 +113,17 @@
     }
 
     .error {
-      color: #c0392b;
+      color: #8C1A1A;
       margin-top: 10px;
       font-weight: bold;
     }
-
   </style>
 </head>
+
 <body>
+
+  <!-- LOGO OBEN LINKS -->
+  <img src="logo-proto-odali.png" alt="Odali Logo Prototyp" class="logo">
 
   <div class="container">
     <div class="card">
@@ -158,7 +160,7 @@
       const res = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ identity, room }) // WICHTIG: "room", nicht "roomName"
+        body: JSON.stringify({ identity, room })
       });
 
       if (!res.ok) {
@@ -214,7 +216,6 @@
 
       let token;
       try {
-        // Backend bekommt: { identity, room: roomName }
         token = await getToken(identity, roomName);
       } catch (err) {
         console.error(err);
@@ -240,12 +241,10 @@
       setStatus("Verbunden mit: " + room.name);
       leaveBtn.disabled = false;
 
-      // eigene Tracks
       room.localParticipant.tracks.forEach(pub => {
         if (pub.track) attachTrack(pub.track);
       });
 
-      // andere Teilnehmer
       room.participants.forEach(p => {
         p.tracks.forEach(pub => {
           if (pub.isSubscribed) attachTrack(pub.track);
@@ -277,4 +276,6 @@
     leaveBtn.onclick = leaveRoom;
   </script>
 
+</body>
 </html>
+
