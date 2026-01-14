@@ -141,8 +141,24 @@
   <script src="https://sdk.twilio.com/js/video/releases/2.27.0/twilio-video.min.js"></script>
 
   <script>
-    // ‼️ HIER DEINE TOKEN-URL EINTRAGEN:
-    const VIDEO_TOKEN_URL = "https://odali-token-server.onrender.com";
+    const TOKEN_SERVER_URL = 'https://odali-token-server.onrender.com';
+
+    async function getToken(identity, room) {
+      const url = `${TOKEN_SERVER_URL}/token`;
+
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ identity, room }) // WICHTIG: "room", nicht "roomName"
+      });
+
+      if (!res.ok) {
+        throw new Error('Token server responded with ' + res.status);
+      }
+
+      const data = await res.json();
+      return data.token;
+    }
 
     const joinBtn = document.getElementById("joinBtn");
     const leaveBtn = document.getElementById("leaveBtn");
@@ -187,32 +203,25 @@
       joinBtn.disabled = true;
       setStatus("Hole Token…");
 
-      let res;
+      let token;
       try {
-        res = await fetch(VIDEO_TOKEN_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ identity, roomName })
-        });
+        // Backend bekommt: { identity, room: roomName }
+        token = await getToken(identity, roomName);
       } catch (err) {
-        showError("Token-Server nicht erreichbar!");
+        console.error(err);
+        showError("Token-Server nicht erreichbar oder Fehler: " + err.message);
         joinBtn.disabled = false;
         return;
       }
-
-      if (!res.ok) {
-        showError("Token-Server Fehler!");
-        joinBtn.disabled = false;
-        return;
-      }
-
-      const data = await res.json();
-      const token = data.token;
 
       setStatus("Verbinde…");
 
       try {
-        room = await Twilio.Video.connect(token, { name: roomName, video: true, audio: true });
+        room = await Twilio.Video.connect(token, {
+          name: roomName,
+          video: true,
+          audio: true
+        });
       } catch (err) {
         showError("Konnte nicht beitreten: " + err.message);
         joinBtn.disabled = false;
@@ -257,8 +266,6 @@
 
     joinBtn.onclick = joinRoom;
     leaveBtn.onclick = leaveRoom;
-
   </script>
 
-</body>
 </html>
