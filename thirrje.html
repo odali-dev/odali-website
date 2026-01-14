@@ -133,6 +133,7 @@
       color: #8C1A1A;
       margin-top: 10px;
       font-weight: bold;
+      min-height: 1.2em;
     }
 
     .divider {
@@ -229,17 +230,20 @@
       cursor: not-allowed;
     }
 
-    .incoming-requests {
-      margin-top: 12px;
+    .incoming-requests,
+    .outgoing-requests {
+      margin-top: 10px;
       font-size: 0.85rem;
       color: #4a2e2b;
     }
 
-    .incoming-requests span {
+    .incoming-requests span,
+    .outgoing-requests span {
       font-weight: 600;
     }
 
-    .incoming-request-item {
+    .incoming-request-item,
+    .outgoing-request-item {
       display: inline-flex;
       align-items: center;
       gap: 6px;
@@ -355,7 +359,7 @@
         </p>
 
         <label for="identity">emeni perdorus</label>
-        <input id="identity" placeholder="p.sh. Dona">
+        <input id="identity" placeholder="p.sh. dona">
 
         <label for="roomName">emeni odes</label>
         <input id="roomName" placeholder="p.sh. oda e gashjanve">
@@ -374,14 +378,16 @@
         <h2 class="friends-section-title">shoqnia jote 👥</h2>
         <p class="friends-hint">
           Shto shokë sipas <strong>username-it t'odalis</strong> edhe thirre direkt prej knej.
+          T'dy duhet me pas account t'krijum n'login.html.
         </p>
 
         <div class="friends-form">
-          <input id="friendName" placeholder="p.sh. Dini">
+          <input id="friendName" placeholder="p.sh. dini">
           <button id="addFriendBtn" class="btn-secondary btn-small">➕ shto shok</button>
         </div>
 
         <div id="incomingRequests" class="incoming-requests"></div>
+        <div id="outgoingRequests" class="outgoing-requests"></div>
 
         <ul id="friendsList" class="friends-list"></ul>
 
@@ -405,7 +411,7 @@
 
   <script>
     const BACKEND_BASE_URL = 'https://odali-token-server.onrender.com';
-    const TOKEN_SERVER_URL = BACKEND_BASE_URL; // gleicher Server
+    const TOKEN_SERVER_URL = BACKEND_BASE_URL;
 
     let room = null;
     let socket = null;
@@ -425,6 +431,7 @@
     const addFriendBtn = document.getElementById("addFriendBtn");
     const friendsListEl = document.getElementById("friendsList");
     const incomingRequestsEl = document.getElementById("incomingRequests");
+    const outgoingRequestsEl = document.getElementById("outgoingRequests");
 
     const callPopupBackdrop = document.getElementById("callPopupBackdrop");
     const callPopupText = document.getElementById("callPopupText");
@@ -544,10 +551,6 @@
     joinBtn.onclick = joinRoom;
     leaveBtn.onclick = leaveRoom;
 
-    // --------------------------
-    // Helpers Friends
-    // --------------------------
-
     function makeRoomNameBetween(a, b) {
       const cleanA = (a || "").trim().toLowerCase();
       const cleanB = (b || "").trim().toLowerCase();
@@ -594,7 +597,22 @@
         });
       }
 
-      // Friends
+      // Outgoing Requests
+      outgoingRequestsEl.innerHTML = "";
+      if (outgoing.length) {
+        const title = document.createElement('div');
+        title.innerHTML = `<span>kërkesa t'mija t'dërguara:</span>`;
+        outgoingRequestsEl.appendChild(title);
+
+        outgoing.forEach(name => {
+          const chip = document.createElement('span');
+          chip.className = 'outgoing-request-item';
+          chip.textContent = `${name} (n'pritje ⏳)`;
+          outgoingRequestsEl.appendChild(chip);
+        });
+      }
+
+      // Friends (accepted)
       friendsListEl.innerHTML = "";
       if (!friends.length) {
         const li = document.createElement('li');
@@ -656,188 +674,5 @@
         await fetchFriends();
       } catch (err) {
         console.error(err);
-        showError("s'mujta me dërgu kërkesën.");
-      }
-    }
-
-    async function acceptFriend(fromName) {
-      showError("");
-      if (!currentUser) return;
-
-      try {
-        const res = await fetch(`${BACKEND_BASE_URL}/friends/accept`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ from: currentUser, to: fromName })
-        });
-
-        const data = await res.json();
-        if (!res.ok) {
-          showError(data.error || 's\'u kry pranimi.');
-          return;
-        }
-
-        await fetchFriends();
-      } catch (err) {
-        console.error(err);
-        showError("s'mujta me pranu.");
-      }
-    }
-
-    function startCallWithFriend(friendName) {
-      showError("");
-      if (!currentUser) {
-        showError("së pari hy n'login.html që me pas username.");
-        return;
-      }
-
-      const roomName = makeRoomNameBetween(currentUser, friendName);
-      if (!roomName) {
-        showError("nuk mujta me formu emnin e odes.");
-        return;
-      }
-
-      identityInput.value = currentUser;
-      roomNameInput.value = roomName;
-
-      // Socket Event -> informs friend
-      if (socket) {
-        socket.emit('callUser', {
-          from: currentUser,
-          to: friendName,
-          roomName
-        });
-      }
-
-      joinRoom();
-    }
-
-    // --------------------------
-    // Incoming Call Popup
-    // --------------------------
-
-    function showIncomingCallPopup(fromUser, roomName) {
-      incomingCallData = { fromUser, roomName };
-      callPopupText.textContent = `${fromUser} po t'thirr n'odë. Hy n'oden?`;
-      callPopupBackdrop.style.display = 'flex';
-    }
-
-    function hideIncomingCallPopup() {
-      callPopupBackdrop.style.display = 'none';
-      incomingCallData = null;
-    }
-
-    acceptCallBtn.addEventListener('click', () => {
-      if (!incomingCallData) {
-        hideIncomingCallPopup();
-        return;
-      }
-
-      const { fromUser, roomName } = incomingCallData;
-
-      if (currentUser) {
-        identityInput.value = currentUser;
-      }
-      roomNameInput.value = roomName;
-
-      // optional: antwort an Server
-      if (socket) {
-        socket.emit('answerCall', {
-          from: currentUser,
-          to: fromUser,
-          roomName,
-          accepted: true
-        });
-      }
-
-      hideIncomingCallPopup();
-      joinRoom();
-    });
-
-    declineCallBtn.addEventListener('click', () => {
-      if (incomingCallData && socket) {
-        socket.emit('answerCall', {
-          from: currentUser,
-          to: incomingCallData.fromUser,
-          roomName: incomingCallData.roomName,
-          accepted: false
-        });
-      }
-      hideIncomingCallPopup();
-    });
-
-    // --------------------------
-    // Socket.io Init
-    // --------------------------
-
-    function initSocket() {
-      if (!currentUser) return;
-      socket = io(BACKEND_BASE_URL, {
-        transports: ['websocket', 'polling']
-      });
-
-      socket.on('connect', () => {
-        socket.emit('register', { username: currentUser });
-      });
-
-      socket.on('friendRequest', (payload) => {
-        // jemand hat DICH als Freund hinzugefügt
-        fetchFriends();
-      });
-
-      socket.on('friendAccepted', (payload) => {
-        fetchFriends();
-      });
-
-      socket.on('friendUpdate', (payload) => {
-        if (payload && payload.user === currentUser) {
-          fetchFriends();
-        }
-      });
-
-      socket.on('incomingCall', ({ from, roomName }) => {
-        showIncomingCallPopup(from, roomName);
-      });
-
-      socket.on('callAnswered', ({ from, roomName, accepted }) => {
-        if (!accepted) {
-          setStatus(`Thirrja u refuzu prej ${from}.`);
-        }
-      });
-    }
-
-    // --------------------------
-    // Initialisierung
-    // --------------------------
-
-    document.addEventListener('DOMContentLoaded', () => {
-      const stored = localStorage.getItem('odaliUser');
-      if (stored) {
-        currentUser = stored.trim().toLowerCase();
-        identityInput.value = currentUser;
-        currentUserHint.textContent = `kyqur si: ${currentUser}`;
-        initSocket();
-        fetchFriends();
-      } else {
-        currentUserHint.textContent = "S'je i kyqun prej login.html — mundesh me shkru direkt emnin ktu, po s'ke shoqni të lidhne.";
-      }
-
-      addFriendBtn.addEventListener('click', () => {
-        const name = friendNameInput.value.trim().toLowerCase();
-        if (!name) {
-          showError("shkruje emnin e shokut/shoqes.");
-          return;
-        }
-        addFriend(name);
-        friendNameInput.value = "";
-      });
-
-      friendNameInput.addEventListener('keyup', (ev) => {
-        if (ev.key === 'Enter') {
-          addFriendBtn.click();
-        }
-      });
-    });
-  </script>
-</body>
-</html>
+        showError("s'mujta me dërgu kërkesën."
+::contentReference[oaicite:0]{index=0}
