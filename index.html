@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>odali video-thirrje</title>
+  <title>odali · hyrja</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <style>
@@ -16,313 +16,250 @@
       font-family: "Segoe UI", sans-serif;
       background: #F7EDE2;
       color: #8C1A1A;
-    }
-
-    /* 3-Spalten-Layout */
-    .layout-row {
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      width: 100%;
-      padding: 40px 0;
     }
 
-    /* Logos links & rechts */
+    .layout-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+      padding: 40px 20px;
+      width: 100%;
+      max-width: 1200px;
+    }
+
     .logo-side {
-      width: 350px;
-      height: auto;
-      margin: 0 20px;
+      width: 260px;
       flex-shrink: 0;
     }
 
-    .container {
+    .center {
       flex: 1;
-      max-width: 900px;
-      padding: 20px;
+      max-width: 640px;
     }
 
-    /* Karte etwas breiter & gleich hoch */
     .card {
       background: #fffdf8;
-      padding: 60px;
-      border-radius: 18px;
+      padding: 48px 40px;
+      border-radius: 20px;
       box-shadow: 0 0 30px rgba(160, 100, 60, 0.35);
       border: 2px solid #f4d7b7;
-      min-height: 500px;
-      max-height: 650px;
-      overflow-y: auto;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      background: rgba(242, 183, 5, 0.18);
+      border: 1px solid rgba(242, 183, 5, 0.6);
+      margin-bottom: 10px;
     }
 
     h1 {
-      margin-top: 0;
-      color: #8C1A1A;
+      margin: 0 0 8px;
+      font-size: clamp(2.2rem, 4vw, 2.8rem);
     }
 
-    label {
-      font-weight: 600;
-      margin-bottom: 6px;
-      display: block;
-    }
-
-    input {
-      width: 300px;
-      max-width: 100%;
-      padding: 10px 14px;
-      border-radius: 12px;
-      border: 2px solid #FFFFFF;
-      background: #F2B705;
-      font-size: 1rem;
-      margin-bottom: 16px;
-      outline: none;
+    .subtitle {
+      margin: 0 0 28px;
       color: #4a2e2b;
+      max-width: 36rem;
     }
 
-    input::placeholder {
-      color: #4a2e2b;
-      opacity: 0.7;
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+      margin-bottom: 18px;
     }
 
-    input:focus {
-      border-color: #FFD23A;
-      box-shadow: 0 0 4px rgba(230, 126, 34, 0.4);
-    }
-
-    button {
-      padding: 10px 20px;
-      border-radius: 14px;
-      border: none;
-      font-size: 1rem;
-      cursor: pointer;
-      margin-right: 10px;
-    }
-
-    .btn-primary {
-      background: #F2B705;
-      color: #8C1A1A;
-      font-weight: bold;
-    }
-
-    .btn-secondary {
-      background: #8C1A1A;
-      color: #FFFFFF;
-    }
-
-    button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    #videos video {
-      width: 48%;
-      border-radius: 12px;
-      background: black;
-      margin-top: 10px;
-      border: 3px solid #f4d7b7;
-    }
-
-    #videos {
+    .menu-btn {
+      position: relative;
       display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    #status {
-      margin-top: 8px;
-      font-size: 0.9rem;
-    }
-
-    .error {
+      justify-content: space-between;
+      padding: 16px 18px;
+      border-radius: 16px;
+      border: 2px solid #F2B705;
+      background: linear-gradient(145deg, #F2B705, #FFD23A);
       color: #8C1A1A;
+      font-weight: 600;
+      box-shadow: 0 10px 20px rgba(160, 100, 60, 0.3);
+
+      opacity: 0;
+      transform: translateY(30px);
+      animation:
+        slide-in 0.75s ease-out forwards,
+        spin-once 0.6s ease-out forwards;
+      animation-delay:
+        calc(0.12s * var(--i)),
+        calc(0.75s + 0.12s * var(--i));
+    }
+
+    @keyframes slide-in {
+      0% { opacity: 0; transform: translateY(30px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes spin-once {
+      0% { transform: translateY(0) rotate(0deg); }
+      100% { transform: translateY(0) rotate(360deg); }
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0; box-shadow: 0 0 0 rgba(242,183,5,0); }
+      40% { opacity: 1; box-shadow: 0 0 22px rgba(242,183,5,0.85); }
+      100% { opacity: 0; box-shadow: 0 0 0 rgba(242,183,5,0); }
+    }
+
+    .hint {
+      font-size: 0.85rem;
+      margin-bottom: 20px;
+    }
+
+    /* Neue JOKE-BANNER Animation + Design */
+
+    .joke-banner {
+      margin-top: 16px;
+      padding: 16px 18px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #FFD987, #F2B705);
+      border: 2px solid #F2B705;
+      box-shadow: 0 8px 18px rgba(160, 100, 60, 0.3);
+
+      opacity: 0;
+      transform: translateY(20px);
+      animation: banner-in 0.8s ease-out forwards;
+    }
+
+    .joke-banner:nth-of-type(1) { animation-delay: 1.2s; }
+    .joke-banner:nth-of-type(2) { animation-delay: 1.4s; }
+
+    @keyframes banner-in {
+      0% { opacity: 0; transform: translateY(25px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .joke-btn {
+      padding: 6px 14px;
+      border-radius: 12px;
+      border: none;
+      background: #8C1A1A;
+      color: #F7EDE2;
+      cursor: pointer;
+      font-weight: 600;
+      transition: transform 0.15s ease;
+    }
+
+    .joke-btn:hover {
+      transform: translateY(-2px) scale(1.03);
+    }
+
+    .joke-answer {
+      display: none;
       margin-top: 10px;
-      font-weight: bold;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.45);
+      color: #4a2e2b;
+      font-size: 0.9rem;
+
+      animation: answer-pop 0.35s ease-out;
     }
 
-    /* Responsive: Logos nach oben/unten */
+    @keyframes answer-pop {
+      0% { opacity: 0; transform: scale(0.9); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
     @media (max-width: 900px) {
-     .layout-row {
-     flex-direction: column;
-     }
-
-     .logo-side {
-     width: 250px;
-     margin: 20px 0;
-     }
-
-     .card {
-     width: 90%;
-     padding: 40px;
-     margin: 0 auto; /* <-- NEU: zentriert die Karte */
-     }
+      .layout-row { flex-direction: column; }
+      .menu-grid { grid-template-columns: 1fr; }
+      .logo-side { width: 220px; order: -1; }
+      .card { padding: 36px 22px; }
     }
-
-
   </style>
 </head>
-
 <body>
-
   <div class="layout-row">
-    <img src="logo_proto_odali.png" alt="Odali Logo Prototyp" class="logo-side">
+    <img src="logo_proto_odali.png" class="logo-side">
 
-    <div class="container">
+    <div class="center">
       <div class="card">
+        <div class="badge">odali · hyrja</div>
+        <h1>mirë se erdhe n'odë 👋</h1>
+        <p class="subtitle">
+          Zgjedh qysh po don me u lidhe –
+          <strong>video-thirrje</strong>, <strong>mesazhe</strong> apo <strong>muri jonë</strong>.
+        </p>
 
-        <h1>odali video-thirrje</h1>
-        <p>shenoh <strong>emrin tond</strong> edhe te njehitin emen te <strong>nji odes</strong> --- Tungat!</p>
+        <div class="menu-grid">
+          <a href="thirrje.html" class="menu-btn" style="--i: 0;">
+            <span>thirrje</span> <span>📹</span>
+          </a>
 
-        <label for="identity">emeni perdorus</label>
-        <input id="identity" placeholder="p.sh. Dona">
+          <a href="#" class="menu-btn" style="--i: 1;">
+            <span>mesazhe</span> <span>💬</span>
+          </a>
 
-        <label for="roomName">emeni odes</label>
-        <input id="roomName" placeholder="p.sh. oda e gashjanve">
+          <a href="#" class="menu-btn" style="--i: 2;">
+            <span>muri jonë</span> <span>🧱</span>
+          </a>
 
-        <button id="joinBtn" class="btn-primary">🚀 Bujrum!</button>
-        <button id="leaveBtn" class="btn-secondary" disabled>⏹️ Izen!</button>
+          <a href="#" class="menu-btn" style="--i: 3;">
+            <span>tjerat</span> <span>✨</span>
+          </a>
+        </div>
 
-        <div id="status">Pa kyqun.</div>
-        <div id="error" class="error"></div>
+        <p class="hint">
+          Tip: <strong>thirrje</strong> çon te Twilio-faqja jote. Ndërron <code>href="#"</code> kur i ke gati tjerat.
+        </p>
 
-        <div id="videos"></div>
+        <!-- JOKE BANNER 1 -->
+        <div class="joke-banner">
+          <p class="joke-question">
+            Was macht ein Psychiater wenn sein Patient einen eitrigen Abzess hat?
+          </p>
+          <button class="joke-btn" data-target="joke1">Lösung anzeigen</button>
+          <p id="joke1" class="joke-answer">
+            Er verschreibt Anti-Kompressiva.
+          </p>
+        </div>
 
+        <!-- JOKE BANNER 2 -->
+        <div class="joke-banner">
+          <p class="joke-question">
+            Was sagt der Chirurg zum HNO-Arzt wenn der Strom ausfällt?
+          </p>
+          <button class="joke-btn" data-target="joke2">Lösung anzeigen</button>
+          <p id="joke2" class="joke-answer">
+            Das Fluss-Wasser-Kraftwerk ist verstopft. Waschkes Mutter badet gerade.
+          </p>
+        </div>
       </div>
     </div>
 
-    <img src="logo_proto_odali2.png" alt="Odali Logo Prototyp 2" class="logo-side">
+    <img src="logo_proto_odali2.png" class="logo-side">
   </div>
 
-  <!-- Twilio JS SDK -->
-  <script src="https://sdk.twilio.com/js/video/releases/2.27.0/twilio-video.min.js"></script>
-
   <script>
-    const TOKEN_SERVER_URL = 'https://odali-token-server.onrender.com';
+    document.querySelectorAll('.joke-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-target');
+        const answer = document.getElementById(id);
 
-    async function getToken(identity, room) {
-      const url = `${TOKEN_SERVER_URL}/token`;
+        const visible = answer.style.display === 'block';
 
-      const res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ identity, room })
+        answer.style.display = visible ? 'none' : 'block';
+        btn.textContent = visible ? 'Lösung anzeigen' : 'Lösung verstecken';
       });
-
-      if (!res.ok) {
-        throw new Error('Token server responded with ' + res.status);
-      }
-
-      const data = await res.json();
-      return data.token;
-    }
-
-    const joinBtn = document.getElementById("joinBtn");
-    const leaveBtn = document.getElementById("leaveBtn");
-    const identityInput = document.getElementById("identity");
-    const roomNameInput = document.getElementById("roomName");
-    const statusEl = document.getElementById("status");
-    const errorEl = document.getElementById("error");
-    const videosDiv = document.getElementById("videos");
-
-    let room = null;
-
-    function setStatus(text) {
-      statusEl.textContent = text;
-    }
-
-    function showError(msg) {
-      errorEl.textContent = msg || "";
-    }
-
-    function attachTrack(track) {
-      const el = track.attach();
-      el.setAttribute("playsinline", "");
-      videosDiv.appendChild(el);
-    }
-
-    function detachTracks(p) {
-      p.tracks.forEach(pub => {
-        if (pub.track) {
-          pub.track.detach().forEach(e => e.remove());
-        }
-      });
-    }
-
-    async function joinRoom() {
-      showError("");
-      const identity = identityInput.value.trim();
-      const roomName = roomNameInput.value.trim();
-
-      if (!identity || !roomName) {
-        showError("shenoni te gjitha t'dhanat!");
-        return;
-      }
-
-      joinBtn.disabled = true;
-      setStatus("tu e grabit tokenin…");
-
-      let token;
-      try {
-        token = await getToken(identity, roomName);
-      } catch (err) {
-        console.error(err);
-        showError("token-serveri nuk reagon ose ndonje gabim: " + err.message);
-        joinBtn.disabled = false;
-        return;
-      }
-
-      setStatus("Tu u kyq...");
-
-      try {
-        room = await Twilio.Video.connect(token, {
-          name: roomName,
-          video: true,
-          audio: true
-        });
-      } catch (err) {
-        showError("Nuk osht kyq: " + err.message);
-        joinBtn.disabled = false;
-        return;
-      }
-
-      setStatus("I lidhun me: " + room.name);
-      leaveBtn.disabled = false;
-
-      room.localParticipant.tracks.forEach(pub => {
-        if (pub.track) attachTrack(pub.track);
-      });
-
-      room.participants.forEach(p => {
-        p.tracks.forEach(pub => {
-          if (pub.isSubscribed && pub.track) attachTrack(pub.track);
-        });
-        p.on("trackSubscribed", attachTrack);
-      });
-
-      room.on("participantConnected", p => {
-        p.on("trackSubscribed", attachTrack);
-      });
-
-      room.on("participantDisconnected", p => {
-        detachTracks(p);
-      });
-
-      room.on("disconnected", () => {
-        setStatus("I pa kyqun.");
-        videosDiv.innerHTML = "";
-        leaveBtn.disabled = true;
-        joinBtn.disabled = false;
-      });
-    }
-
-    function leaveRoom() {
-      if (room) {
-        room.disconnect();
-        room = null;
-      }
-    }
-
-    joinBtn.onclick = joinRoom;
-    leaveBtn.onclick = leaveRoom;
+    });
   </script>
-
 </body>
 </html>
