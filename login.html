@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>odali · hyrja · login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: #F7EDE2;
+      color: #8C1A1A;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .layout-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+      padding: 40px 20px;
+      width: 100%;
+      max-width: 1200px;
+    }
+
+    .logo-side {
+      width: 260px;
+      flex-shrink: 0;
+      height: auto;
+    }
+
+    .center {
+      flex: 1;
+      max-width: 420px;
+    }
+
+    .card {
+      background: #fffdf8;
+      padding: 40px 32px;
+      border-radius: 20px;
+      box-shadow: 0 0 30px rgba(160, 100, 60, 0.35);
+      border: 2px solid #f4d7b7;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      background: rgba(242, 183, 5, 0.18);
+      border: 1px solid rgba(242, 183, 5, 0.6);
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(2rem, 4vw, 2.4rem);
+      color: #8C1A1A;
+    }
+
+    .subtitle {
+      margin: 0 0 24px;
+      color: #4a2e2b;
+      font-size: 0.95rem;
+    }
+
+    label {
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: block;
+      font-size: 0.9rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 2px solid #FFFFFF;
+      background: #F2B705;
+      font-size: 1rem;
+      margin-bottom: 16px;
+      outline: none;
+      color: #4a2e2b;
+    }
+
+    input::placeholder {
+      color: #4a2e2b;
+      opacity: 0.7;
+    }
+
+    input:focus {
+      border-color: #FFD23A;
+      box-shadow: 0 0 4px rgba(230, 126, 34, 0.4);
+    }
+
+    .buttons-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .btn {
+      padding: 10px 18px;
+      border-radius: 14px;
+      border: none;
+      font-size: 0.95rem;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(160, 100, 60, 0.3);
+    }
+
+    .btn-primary {
+      background: #F2B705;
+      color: #8C1A1A;
+      font-weight: bold;
+    }
+
+    .btn-secondary {
+      background: #8C1A1A;
+      color: #FFFFFF;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 14px rgba(160, 100, 60, 0.35);
+    }
+
+    .error {
+      margin-top: 10px;
+      color: #8C1A1A;
+      font-size: 0.9rem;
+      font-weight: 600;
+      min-height: 1.2em;
+    }
+
+    .note {
+      margin-top: 10px;
+      font-size: 0.8rem;
+      color: #7b4b42;
+    }
+
+    @media (max-width: 900px) {
+      .layout-row {
+        flex-direction: column;
+      }
+
+      .logo-side {
+        width: 220px;
+        order: -1;
+      }
+
+      .card {
+        width: 90%;
+        margin: 0 auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout-row">
+    <img src="logo_proto_odali.png" alt="Odali Logo" class="logo-side">
+
+    <div class="center">
+      <div class="card">
+        <div class="badge">odali · hyrja</div>
+        <h1>kyqu n'odë</h1>
+        <p class="subtitle">
+          Krijo nji <strong>account t'vet</strong> ose hync me at' qysh e ke ba ma heret.  
+          E ruajna veç <strong>username-in</strong> n'kafaz (localStorage) për me t'paraqit ma vonë.
+        </p>
+
+        <label for="loginUsername">username</label>
+        <input id="loginUsername" placeholder="p.sh. dona">
+
+        <label for="loginPassword">password</label>
+        <input id="loginPassword" type="password" placeholder="••••••••">
+
+        <div class="buttons-row">
+          <button id="registerBtn" class="btn btn-secondary">🆕 Account erstellen</button>
+          <button id="loginBtn" class="btn btn-primary">🚪 Einloggen</button>
+        </div>
+
+        <div id="loginError" class="error"></div>
+
+        <div class="note">
+          Tip: Username ruhet gjithmonë me shkronja t'vogla. <br>
+          p.sh. "Dona" → "dona" (për shoqni & thirrje).
+        </div>
+      </div>
+    </div>
+
+    <img src="logo_proto_odali2.png" alt="Odali Logo 2" class="logo-side">
+  </div>
+
+  <script>
+    const BACKEND_BASE_URL = 'https://odali-token-server.onrender.com'; // ggf. anpassen
+
+    const loginBtn = document.getElementById('loginBtn');
+    const registerBtn = document.getElementById('registerBtn');
+    const usernameInput = document.getElementById('loginUsername');
+    const passwordInput = document.getElementById('loginPassword');
+    const loginError = document.getElementById('loginError');
+
+    function showError(msg) {
+      loginError.textContent = msg || "";
+    }
+
+    async function doRegister() {
+      showError("");
+
+      const username = usernameInput.value.trim();
+      const password = passwordInput.value.trim();
+
+      if (!username || !password) {
+        showError("Shkruji t'dy: username edhe password.");
+        return;
+      }
+
+      try {
+        const res = await fetch(`${BACKEND_BASE_URL}/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          showError(data.error || 'Gabim n\'registrim.');
+          return;
+        }
+
+        // username (normalisiert, klein) kommt vom Server zurück
+        localStorage.setItem('odaliUser', data.username);
+        window.location.href = 'index.html';
+      } catch (err) {
+        console.error(err);
+        showError("S'po munem me u lidh me serverin.");
+      }
+    }
+
+    async function doLogin() {
+      showError("");
+
+      const username = usernameInput.value.trim();
+      const password = passwordInput.value.trim();
+
+      if (!username || !password) {
+        showError("Shkruji t'dy: username edhe password.");
+        return;
+      }
+
+      try {
+        const res = await fetch(`${BACKEND_BASE_URL}/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          showError(data.error || 'Gabim me login.');
+          return;
+        }
+
+        localStorage.setItem('odaliUser', data.username);
+        window.location.href = 'index.html';
+      } catch (err) {
+        console.error(err);
+        showError("S'po munem me u lidh me serverin.");
+      }
+    }
+
+    registerBtn.addEventListener('click', doRegister);
+    loginBtn.addEventListener('click', doLogin);
+
+    passwordInput.addEventListener('keyup', (ev) => {
+      if (ev.key === 'Enter') {
+        doLogin();
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>odali video-thirrje</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: #F7EDE2;
+      color: #8C1A1A;
+    }
+
+    .layout-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      padding: 40px 0;
+    }
+
+    .logo-side {
+      width: 350px;
+      height: auto;
+      margin: 0 20px;
+      flex-shrink: 0;
+    }
+
+    .container {
+      flex: 1;
+      max-width: 900px;
+      padding: 20px;
+    }
+
+    .card {
+      background: #fffdf8;
+      padding: 60px;
+      border-radius: 18px;
+      box-shadow: 0 0 30px rgba(160, 100, 60, 0.35);
+      border: 2px solid #f4d7b7;
+      min-height: 500px;
+      max-height: 650px;
+      overflow-y: auto;
+    }
+
+    h1 {
+      margin-top: 0;
+      color: #8C1A1A;
+    }
+
+    label {
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    input {
+      width: 300px;
+      max-width: 100%;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 2px solid #FFFFFF;
+      background: #F2B705;
+      font-size: 1rem;
+      margin-bottom: 16px;
+      outline: none;
+      color: #4a2e2b;
+    }
+
+    input::placeholder {
+      color: #4a2e2b;
+      opacity: 0.7;
+    }
+
+    input:focus {
+      border-color: #FFD23A;
+      box-shadow: 0 0 4px rgba(230, 126, 34, 0.4);
+    }
+
+    button {
+      padding: 10px 20px;
+      border-radius: 14px;
+      border: none;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    .btn-primary {
+      background: #F2B705;
+      color: #8C1A1A;
+      font-weight: bold;
+    }
+
+    .btn-secondary {
+      background: #8C1A1A;
+      color: #FFFFFF;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    #videos video {
+      width: 48%;
+      border-radius: 12px;
+      background: black;
+      margin-top: 10px;
+      border: 3px solid #f4d7b7;
+    }
+
+    #videos {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    #status {
+      margin-top: 8px;
+      font-size: 0.9rem;
+    }
+
+    .error {
+      color: #8C1A1A;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px dashed rgba(140, 26, 26, 0.35);
+      margin: 24px 0 18px;
+    }
+
+    .friends-section-title {
+      margin: 0 0 6px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #8C1A1A;
+    }
+
+    .friends-hint {
+      margin: 0 0 14px;
+      font-size: 0.85rem;
+      color: #7b4b42;
+    }
+
+    .friends-form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    #friendName {
+      width: 220px;
+      max-width: 100%;
+      margin-bottom: 0;
+    }
+
+    .btn-small {
+      padding: 8px 14px;
+      font-size: 0.9rem;
+      border-radius: 12px;
+    }
+
+    .friends-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .friends-list-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: rgba(242, 183, 5, 0.18);
+      border: 1px solid rgba(242, 183, 5, 0.7);
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+    }
+
+    .friend-name {
+      font-weight: 600;
+      color: #4a2e2b;
+    }
+
+    .friend-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .friend-status {
+      font-size: 0.8rem;
+      color: #7b4b42;
+    }
+
+    .friend-status span {
+      font-weight: 600;
+    }
+
+    .friend-call-btn {
+      padding: 6px 10px;
+      font-size: 0.85rem;
+      border-radius: 12px;
+      background: #8C1A1A;
+      color: #fffdf8;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .friend-call-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .incoming-requests {
+      margin-top: 12px;
+      font-size: 0.85rem;
+      color: #4a2e2b;
+    }
+
+    .incoming-requests span {
+      font-weight: 600;
+    }
+
+    .incoming-request-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-right: 10px;
+      margin-top: 4px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.6);
+      border: 1px solid rgba(242,183,5,0.7);
+    }
+
+    .incoming-accept-btn {
+      padding: 2px 8px;
+      font-size: 0.8rem;
+      border-radius: 999px;
+      border: none;
+      background: #2e7d32;
+      color: #fdfcf8;
+      cursor: pointer;
+    }
+
+    /* Popup für Incoming Call */
+
+    .call-popup-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    .call-popup {
+      background: #fffdf8;
+      border-radius: 18px;
+      padding: 20px 22px;
+      border: 2px solid #f4d7b7;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+      max-width: 320px;
+      width: 90%;
+      text-align: center;
+    }
+
+    .call-popup h2 {
+      margin-top: 0;
+      font-size: 1.2rem;
+      color: #8C1A1A;
+    }
+
+    .call-popup p {
+      font-size: 0.9rem;
+      color: #4a2e2b;
+      margin-bottom: 18px;
+    }
+
+    .call-popup-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .btn-accept {
+      background: #2e7d32;
+      color: #fdfcf8;
+    }
+
+    .btn-decline {
+      background: #c62828;
+      color: #fff7f5;
+    }
+
+    @media (max-width: 900px) {
+      .layout-row {
+        flex-direction: column;
+      }
+
+      .logo-side {
+        width: 250px;
+        margin: 20px 0;
+      }
+
+      .card {
+        width: 90%;
+        padding: 40px;
+        margin: 0 auto;
+      }
+
+      #friendName {
+        width: 100%;
+      }
+    }
+  </style>
+
+  <!-- Twilio JS SDK -->
+  <script src="https://sdk.twilio.com/js/video/releases/2.27.0/twilio-video.min.js"></script>
+  <!-- Socket.io-Client direkt vom Backend-Server -->
+  <script src="https://odali-token-server.onrender.com/socket.io/socket.io.js"></script>
+</head>
+
+<body>
+
+  <div class="layout-row">
+    <img src="logo_proto_odali.png" alt="Odali Logo Prototyp" class="logo-side">
+
+    <div class="container">
+      <div class="card">
+
+        <h1>odali video-thirrje</h1>
+        <p>
+          shenoh <strong>emrin tond</strong> edhe te njejtin emen te <strong>nji odes</strong> --- Tungat!<br>
+          <small id="currentUserHint"></small>
+        </p>
+
+        <label for="identity">emeni perdorus</label>
+        <input id="identity" placeholder="p.sh. Dona">
+
+        <label for="roomName">emeni odes</label>
+        <input id="roomName" placeholder="p.sh. oda e gashjanve">
+
+        <button id="joinBtn" class="btn-primary">🚀 Bujrum!</button>
+        <button id="leaveBtn" class="btn-secondary" disabled>⏹️ Izen!</button>
+
+        <div id="status">Pa kyqun.</div>
+        <div id="error" class="error"></div>
+
+        <div id="videos"></div>
+
+        <hr class="divider">
+
+        <!-- Freunde-Bereich -->
+        <h2 class="friends-section-title">shoqnia jote 👥</h2>
+        <p class="friends-hint">
+          Shto shokë sipas <strong>username-it t'odalis</strong> edhe thirre direkt prej knej.
+        </p>
+
+        <div class="friends-form">
+          <input id="friendName" placeholder="p.sh. Dini">
+          <button id="addFriendBtn" class="btn-secondary btn-small">➕ shto shok</button>
+        </div>
+
+        <div id="incomingRequests" class="incoming-requests"></div>
+
+        <ul id="friendsList" class="friends-list"></ul>
+
+      </div>
+    </div>
+
+    <img src="logo_proto_odali2.png" alt="Odali Logo Prototyp 2" class="logo-side">
+  </div>
+
+  <!-- Incoming Call Popup -->
+  <div id="callPopupBackdrop" class="call-popup-backdrop">
+    <div class="call-popup">
+      <h2>📞 thirrje n'odë</h2>
+      <p id="callPopupText">Dikush po t'thirr...</p>
+      <div class="call-popup-buttons">
+        <button id="acceptCallBtn" class="btn-accept btn-small">✅ prano</button>
+        <button id="declineCallBtn" class="btn-decline btn-small">❌ refuzo</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const BACKEND_BASE_URL = 'https://odali-token-server.onrender.com';
+    const TOKEN_SERVER_URL = BACKEND_BASE_URL; // gleicher Server
+
+    let room = null;
+    let socket = null;
+    let currentUser = null;
+    let incomingCallData = null;
+
+    const joinBtn = document.getElementById("joinBtn");
+    const leaveBtn = document.getElementById("leaveBtn");
+    const identityInput = document.getElementById("identity");
+    const roomNameInput = document.getElementById("roomName");
+    const statusEl = document.getElementById("status");
+    const errorEl = document.getElementById("error");
+    const videosDiv = document.getElementById("videos");
+    const currentUserHint = document.getElementById("currentUserHint");
+
+    const friendNameInput = document.getElementById("friendName");
+    const addFriendBtn = document.getElementById("addFriendBtn");
+    const friendsListEl = document.getElementById("friendsList");
+    const incomingRequestsEl = document.getElementById("incomingRequests");
+
+    const callPopupBackdrop = document.getElementById("callPopupBackdrop");
+    const callPopupText = document.getElementById("callPopupText");
+    const acceptCallBtn = document.getElementById("acceptCallBtn");
+    const declineCallBtn = document.getElementById("declineCallBtn");
+
+    function setStatus(text) {
+      statusEl.textContent = text;
+    }
+
+    function showError(msg) {
+      errorEl.textContent = msg || "";
+    }
+
+    function attachTrack(track) {
+      const el = track.attach();
+      el.setAttribute("playsinline", "");
+      videosDiv.appendChild(el);
+    }
+
+    function detachTracks(p) {
+      p.tracks.forEach(pub => {
+        if (pub.track) {
+          pub.track.detach().forEach(e => e.remove());
+        }
+      });
+    }
+
+    async function getToken(identity, roomName) {
+      const res = await fetch(`${TOKEN_SERVER_URL}/token`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ identity, room: roomName })
+      });
+
+      if (!res.ok) {
+        throw new Error('Token server responded with ' + res.status);
+      }
+      const data = await res.json();
+      return data.token;
+    }
+
+    async function joinRoom() {
+      showError("");
+      const identity = identityInput.value.trim();
+      const roomName = roomNameInput.value.trim();
+
+      if (!identity || !roomName) {
+        showError("shenoni te gjitha t'dhanat!");
+        return;
+      }
+
+      joinBtn.disabled = true;
+      setStatus("tu e grabit tokenin…");
+
+      let token;
+      try {
+        token = await getToken(identity, roomName);
+      } catch (err) {
+        console.error(err);
+        showError("token-serveri nuk reagon ose ndonje gabim: " + err.message);
+        joinBtn.disabled = false;
+        return;
+      }
+
+      setStatus("Tu u kyq...");
+
+      try {
+        room = await Twilio.Video.connect(token, {
+          name: roomName,
+          video: true,
+          audio: true
+        });
+      } catch (err) {
+        showError("Nuk osht kyq: " + err.message);
+        joinBtn.disabled = false;
+        return;
+      }
+
+      setStatus("I lidhun me: " + room.name);
+      leaveBtn.disabled = false;
+
+      room.localParticipant.tracks.forEach(pub => {
+        if (pub.track) attachTrack(pub.track);
+      });
+
+      room.participants.forEach(p => {
+        p.tracks.forEach(pub => {
+          if (pub.isSubscribed && pub.track) attachTrack(pub.track);
+        });
+        p.on("trackSubscribed", attachTrack);
+      });
+
+      room.on("participantConnected", p => {
+        p.on("trackSubscribed", attachTrack);
+      });
+
+      room.on("participantDisconnected", p => {
+        detachTracks(p);
+      });
+
+      room.on("disconnected", () => {
+        setStatus("I pa kyqun.");
+        videosDiv.innerHTML = "";
+        leaveBtn.disabled = true;
+        joinBtn.disabled = false;
+      });
+    }
+
+    function leaveRoom() {
+      if (room) {
+        room.disconnect();
+        room = null;
+      }
+    }
+
+    joinBtn.onclick = joinRoom;
+    leaveBtn.onclick = leaveRoom;
+
+    // --------------------------
+    // Helpers Friends
+    // --------------------------
+
+    function makeRoomNameBetween(a, b) {
+      const cleanA = (a || "").trim().toLowerCase();
+      const cleanB = (b || "").trim().toLowerCase();
+      if (!cleanA || !cleanB) return null;
+      const ordered = [cleanA, cleanB].sort();
+      return `oda-${ordered[0]}-${ordered[1]}`;
+    }
+
+    async function fetchFriends() {
+      if (!currentUser) return;
+      try {
+        const res = await fetch(`${BACKEND_BASE_URL}/friends?username=${encodeURIComponent(currentUser)}`);
+        const data = await res.json();
+        if (!res.ok) {
+          console.error(data);
+          return;
+        }
+        renderFriends(data);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function renderFriends(data) {
+      const { friends = [], incoming = [], outgoing = [] } = data;
+
+      // Incoming Requests
+      incomingRequestsEl.innerHTML = "";
+      if (incoming.length) {
+        const title = document.createElement('div');
+        title.innerHTML = `<span>kërkesa t'reja:</span>`;
+        incomingRequestsEl.appendChild(title);
+
+        incoming.forEach(name => {
+          const chip = document.createElement('span');
+          chip.className = 'incoming-request-item';
+          chip.textContent = name + ' ';
+          const btn = document.createElement('button');
+          btn.className = 'incoming-accept-btn';
+          btn.textContent = 'prano';
+          btn.addEventListener('click', () => acceptFriend(name));
+          chip.appendChild(btn);
+          incomingRequestsEl.appendChild(chip);
+        });
+      }
+
+      // Friends
+      friendsListEl.innerHTML = "";
+      if (!friends.length) {
+        const li = document.createElement('li');
+        li.className = 'friends-list-item';
+        li.textContent = "S'ka hala shokë. Shto dikon n'odë.";
+        friendsListEl.appendChild(li);
+        return;
+      }
+
+      friends.forEach(friendName => {
+        const li = document.createElement('li');
+        li.className = 'friends-list-item';
+
+        const metaDiv = document.createElement('div');
+        metaDiv.className = 'friend-meta';
+
+        const n = document.createElement('span');
+        n.className = 'friend-name';
+        n.textContent = friendName;
+
+        const s = document.createElement('span');
+        s.className = 'friend-status';
+        s.innerHTML = '<span>status:</span> i pranuar ✅';
+
+        metaDiv.appendChild(n);
+        metaDiv.appendChild(s);
+
+        const callBtn = document.createElement('button');
+        callBtn.className = 'friend-call-btn';
+        callBtn.textContent = '📞 thirre';
+        callBtn.addEventListener('click', () => startCallWithFriend(friendName));
+
+        li.appendChild(metaDiv);
+        li.appendChild(callBtn);
+        friendsListEl.appendChild(li);
+      });
+    }
+
+    async function addFriend(name) {
+      showError("");
+      if (!currentUser) {
+        showError("së pari hy n'login.html që me pas username.");
+        return;
+      }
+
+      try {
+        const res = await fetch(`${BACKEND_BASE_URL}/friends/request`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ from: currentUser, to: name })
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          showError(data.error || 's\'u kry kërkesa.');
+          return;
+        }
+
+        await fetchFriends();
+      } catch (err) {
+        console.error(err);
+        showError("s'mujta me dërgu kërkesën.");
+      }
+    }
+
+    async function acceptFriend(fromName) {
+      showError("");
+      if (!currentUser) return;
+
+      try {
+        const res = await fetch(`${BACKEND_BASE_URL}/friends/accept`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ from: currentUser, to: fromName })
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          showError(data.error || 's\'u kry pranimi.');
+          return;
+        }
+
+        await fetchFriends();
+      } catch (err) {
+        console.error(err);
+        showError("s'mujta me pranu.");
+      }
+    }
+
+    function startCallWithFriend(friendName) {
+      showError("");
+      if (!currentUser) {
+        showError("së pari hy n'login.html që me pas username.");
+        return;
+      }
+
+      const roomName = makeRoomNameBetween(currentUser, friendName);
+      if (!roomName) {
+        showError("nuk mujta me formu emnin e odes.");
+        return;
+      }
+
+      identityInput.value = currentUser;
+      roomNameInput.value = roomName;
+
+      // Socket Event -> informs friend
+      if (socket) {
+        socket.emit('callUser', {
+          from: currentUser,
+          to: friendName,
+          roomName
+        });
+      }
+
+      joinRoom();
+    }
+
+    // --------------------------
+    // Incoming Call Popup
+    // --------------------------
+
+    function showIncomingCallPopup(fromUser, roomName) {
+      incomingCallData = { fromUser, roomName };
+      callPopupText.textContent = `${fromUser} po t'thirr n'odë. Hy n'oden?`;
+      callPopupBackdrop.style.display = 'flex';
+    }
+
+    function hideIncomingCallPopup() {
+      callPopupBackdrop.style.display = 'none';
+      incomingCallData = null;
+    }
+
+    acceptCallBtn.addEventListener('click', () => {
+      if (!incomingCallData) {
+        hideIncomingCallPopup();
+        return;
+      }
+
+      const { fromUser, roomName } = incomingCallData;
+
+      if (currentUser) {
+        identityInput.value = currentUser;
+      }
+      roomNameInput.value = roomName;
+
+      // optional: antwort an Server
+      if (socket) {
+        socket.emit('answerCall', {
+          from: currentUser,
+          to: fromUser,
+          roomName,
+          accepted: true
+        });
+      }
+
+      hideIncomingCallPopup();
+      joinRoom();
+    });
+
+    declineCallBtn.addEventListener('click', () => {
+      if (incomingCallData && socket) {
+        socket.emit('answerCall', {
+          from: currentUser,
+          to: incomingCallData.fromUser,
+          roomName: incomingCallData.roomName,
+          accepted: false
+        });
+      }
+      hideIncomingCallPopup();
+    });
+
+    // --------------------------
+    // Socket.io Init
+    // --------------------------
+
+    function initSocket() {
+      if (!currentUser) return;
+      socket = io(BACKEND_BASE_URL, {
+        transports: ['websocket', 'polling']
+      });
+
+      socket.on('connect', () => {
+        socket.emit('register', { username: currentUser });
+      });
+
+      socket.on('friendRequest', (payload) => {
+        // jemand hat DICH als Freund hinzugefügt
+        fetchFriends();
+      });
+
+      socket.on('friendAccepted', (payload) => {
+        fetchFriends();
+      });
+
+      socket.on('friendUpdate', (payload) => {
+        if (payload && payload.user === currentUser) {
+          fetchFriends();
+        }
+      });
+
+      socket.on('incomingCall', ({ from, roomName }) => {
+        showIncomingCallPopup(from, roomName);
+      });
+
+      socket.on('callAnswered', ({ from, roomName, accepted }) => {
+        if (!accepted) {
+          setStatus(`Thirrja u refuzu prej ${from}.`);
+        }
+      });
+    }
+
+    // --------------------------
+    // Initialisierung
+    // --------------------------
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const stored = localStorage.getItem('odaliUser');
+      if (stored) {
+        currentUser = stored.trim().toLowerCase();
+        identityInput.value = currentUser;
+        currentUserHint.textContent = `kyqur si: ${currentUser}`;
+        initSocket();
+        fetchFriends();
+      } else {
+        currentUserHint.textContent = "S'je i kyqun prej login.html — mundesh me shkru direkt emnin ktu, po s'ke shoqni të lidhne.";
+      }
+
+      addFriendBtn.addEventListener('click', () => {
+        const name = friendNameInput.value.trim().toLowerCase();
+        if (!name) {
+          showError("shkruje emnin e shokut/shoqes.");
+          return;
+        }
+        addFriend(name);
+        friendNameInput.value = "";
+      });
+
+      friendNameInput.addEventListener('keyup', (ev) => {
+        if (ev.key === 'Enter') {
+          addFriendBtn.click();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
