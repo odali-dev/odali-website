@@ -912,8 +912,8 @@
     // ==========================
 
     function initAuth() {
-      authToken = localStorage.getItem(TOKEN_KEY);
-      currentUser = localStorage.getItem(USERNAME_KEY);
+        authToken = localStorage.getItem('odali_token');
+        currentUser = localStorage.getItem('odali_username');
 
       if (!authToken || !currentUser) {
         // wenn nicht eingeloggt, zurück zur login-Seite
