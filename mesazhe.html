@@ -526,7 +526,7 @@
     // Wenn dein Service anders heißt, HIER anpassen.
 
     // Wie du im Frontend speicherst:
-    // in login.html nach erfolgreichem Login:
+    // in login.html nach erfolgreichem Login z.B.:
     //   localStorage.setItem('odali_username', username);
     //   localStorage.setItem('odali_token',    username); // Token = username
     const TOKEN_KEY = 'odali_token';
@@ -912,8 +912,9 @@
     // ==========================
 
     function initAuth() {
-        authToken = localStorage.getItem('odali_token');
-        currentUser = localStorage.getItem('odali_username');
+      // *** geändert: benutze überall die Konstanten
+      authToken = localStorage.getItem(TOKEN_KEY);
+      currentUser = localStorage.getItem(USERNAME_KEY);
 
       if (!authToken || !currentUser) {
         // wenn nicht eingeloggt, zurück zur login-Seite
