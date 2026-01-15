@@ -908,39 +908,57 @@
     }
 
     // ==========================
-    // INIT
+    // INIT / AUTH
     // ==========================
 
     function initAuth() {
-        authToken = localStorage.getItem(TOKEN_KEY);
-        currentUser = localStorage.getItem(USERNAME_KEY);
+      authToken = localStorage.getItem(TOKEN_KEY);
+      currentUser = localStorage.getItem(USERNAME_KEY);
 
-        if (!authToken || !currentUser) {
+      if (!authToken || !currentUser) {
+        // Nicht eingeloggt
         currentUserLabel.textContent = "S'jeni të kyçur";
-    
+        chatContactNameEl.textContent = 'Kein Kontakt ausgewählt';
+        chatContactStatusEl.textContent = 'Ju lutem të kyçeni së pari (Login-Button oben rechts).';
+        chatContactAvatarEl.textContent = '?';
+
         messagesEl.innerHTML = `
-        <div class="system-message">
-        Ju lutem të kyçeni së pari.
-        </div>
-    `   ;
+          <div class="system-message">
+            Ju lutem të kyçeni së pari.
+          </div>
+        `;
 
         // Chat-Eingabe deaktivieren
         messageInputEl.disabled = true;
         sendBtnEl.disabled = true;
 
-        // Kontakte und Polling nicht starten
-        return false;
-        }
+        // Button oben als "Login" verwenden
+        logoutBtn.textContent = 'Login';
+        logoutBtn.dataset.mode = 'login';
 
-        currentUserLabel.textContent = currentUser;
-        return true;
+        setConnectionState('offline', 'Nicht eingeloggt');
+        return false;
+      }
+
+      // Eingeloggt
+      currentUserLabel.textContent = currentUser;
+      messageInputEl.disabled = false;
+      logoutBtn.textContent = 'Logout';
+      logoutBtn.dataset.mode = 'logout';
+      return true;
     }
 
     function initEvents() {
       logoutBtn.addEventListener('click', () => {
-        localStorage.removeItem(TOKEN_KEY);
-        localStorage.removeItem(USERNAME_KEY);
-        window.location.href = 'login.html';
+        // je nach Modus: Login oder Logout
+        if (logoutBtn.dataset.mode === 'login') {
+          window.location.href = 'login.html?redirect=mesazhe.html';
+        } else {
+          localStorage.removeItem(TOKEN_KEY);
+          localStorage.removeItem(USERNAME_KEY);
+          // Nach Logout zur Login-Seite
+          window.location.href = 'login.html';
+        }
       });
 
       sendBtnEl.addEventListener('click', () => {
@@ -959,8 +977,16 @@
     }
 
     async function init() {
-      if (!initAuth()) return;
-      initEvents();
+      initEvents();                // Events immer registrieren
+      const loggedIn = initAuth(); // prüft Auth + UI-Anpassung
+
+      if (!loggedIn) {
+        // Nicht eingeloggt: keine API-Calls, kein Polling
+        renderMessages();
+        return;
+      }
+
+      // Eingeloggt → normal weiter
       setConnectionState('connecting', 'Verbinde zum Server…');
       await loadContacts();
       renderMessages();
