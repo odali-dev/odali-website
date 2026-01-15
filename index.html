@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>odali · hyrja</title>
+  <title>odali · hyrja · login</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <style>
@@ -34,18 +34,18 @@
 
     .logo-side {
       width: 260px;
-      height: auto;
       flex-shrink: 0;
+      height: auto;
     }
 
     .center {
       flex: 1;
-      max-width: 640px;
+      max-width: 420px;
     }
 
     .card {
       background: #fffdf8;
-      padding: 48px 40px;
+      padding: 40px 32px;
       border-radius: 20px;
       box-shadow: 0 0 30px rgba(160, 100, 60, 0.35);
       border: 2px solid #f4d7b7;
@@ -60,304 +60,118 @@
       letter-spacing: 0.15em;
       background: rgba(242, 183, 5, 0.18);
       border: 1px solid rgba(242, 183, 5, 0.6);
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
 
-    /* Account-Leiste oben in der Karte */
-    .account-bar {
-      display: flex;
+    /* Logout-Box */
+    .logout-box {
+      display: none; /* wird per JS auf flex gesetzt */
       align-items: center;
       justify-content: space-between;
       gap: 10px;
       margin-bottom: 12px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: rgba(242, 183, 5, 0.18);
+      border: 1px solid rgba(242, 183, 5, 0.6);
       font-size: 0.85rem;
       color: #7b4b42;
     }
 
-    .account-status {
+    .logout-info {
       flex: 1;
-    }
-
-    .account-btn {
-      padding: 6px 12px;
-      border-radius: 999px;
-      border: 1px solid #F2B705;
-      background: #F2B705;
-      color: #8C1A1A;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 0.8rem;
-      white-space: nowrap;
-      box-shadow: 0 4px 10px rgba(160, 100, 60, 0.3);
-      transition: transform 0.12s ease, box-shadow 0.12s ease;
-    }
-
-    .account-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 14px rgba(160, 100, 60, 0.35);
     }
 
     h1 {
       margin: 0 0 8px;
-      font-size: clamp(2.2rem, 4vw, 2.8rem);
+      font-size: clamp(2rem, 4vw, 2.4rem);
       color: #8C1A1A;
     }
 
     .subtitle {
-      margin: 0 0 28px;
+      margin: 0 0 24px;
       color: #4a2e2b;
-      max-width: 36rem;
-    }
-
-    .subtitle strong {
-      color: #8C1A1A;
-    }
-
-    /* Menü-Buttons */
-
-    .menu-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 18px;
-      margin-bottom: 18px;
-    }
-
-    .menu-btn {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 18px;
-      border-radius: 16px;
-      text-decoration: none;
-      border: 2px solid #F2B705;
-      background: linear-gradient(145deg, #F2B705, #FFD23A);
-      color: #8C1A1A;
-      font-weight: 600;
-      font-size: 1rem;
-      box-shadow: 0 10px 20px rgba(160, 100, 60, 0.3);
-      overflow: hidden;
-
-      /* Start-Position für Slide-in */
-      opacity: 0;
-      transform: translateY(30px);
-
-      /* Slide-in + zeitversetzter Spin */
-      animation:
-        slide-in 0.75s ease-out forwards,
-        spin-once 0.6s ease-out forwards;
-      animation-delay:
-        calc(0.12s * var(--i)),
-        calc(0.9s + 0.18s * var(--i));
-    }
-
-    .menu-btn span.label {
-      z-index: 1;
-    }
-
-    .menu-btn span.icon {
-      z-index: 1;
-      font-size: 1.3rem;
-    }
-
-    .menu-btn::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      border: 2px solid rgba(255, 255, 255, 0.0);
-      box-shadow: 0 0 0 rgba(242, 183, 5, 0);
-      opacity: 0;
-      pointer-events: none;
-      animation: pulse 1.4s ease-in-out infinite;
-      animation-delay: calc(1.4s + 0.2s * var(--i));
-    }
-
-    .menu-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 14px 26px rgba(160, 100, 60, 0.4);
-    }
-
-    .menu-btn:hover::after {
-      opacity: 1;
-    }
-
-    .hint {
-      font-size: 0.85rem;
-      color: #7b4b42;
-      margin-bottom: 20px;
-    }
-
-    @keyframes slide-in {
-      0% {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      100% {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @keyframes spin-once {
-      0% {
-        transform: translateY(0) rotate(0deg);
-      }
-      100% {
-        transform: translateY(0) rotate(360deg);
-      }
-    }
-
-    @keyframes pulse {
-      0% {
-        opacity: 0;
-        box-shadow: 0 0 0 rgba(242, 183, 5, 0);
-      }
-      40% {
-        opacity: 1;
-        box-shadow: 0 0 22px rgba(242, 183, 5, 0.85);
-      }
-      100% {
-        opacity: 0;
-        box-shadow: 0 0 0 rgba(242, 183, 5, 0);
-      }
-    }
-
-    /* QUIZ-BANNER */
-
-    .quiz-banner {
-      margin-top: 16px;
-      padding: 16px 18px;
-      border-radius: 16px;
-      background: linear-gradient(135deg, #FFD987, #F2B705);
-      border: 2px solid #F2B705;
-      box-shadow: 0 8px 18px rgba(160, 100, 60, 0.3);
-
-      opacity: 0;
-      transform: translateY(20px);
-      animation: banner-in 0.8s ease-out forwards;
-      animation-delay: 1.6s;
-    }
-
-    @keyframes banner-in {
-      0% {
-        opacity: 0;
-        transform: translateY(25px);
-      }
-      100% {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .quiz-question {
-      margin: 0 0 10px;
       font-size: 0.95rem;
-      color: #4a2e2b;
+    }
+
+    label {
       font-weight: 600;
+      margin-bottom: 6px;
+      display: block;
+      font-size: 0.9rem;
     }
 
-    .quiz-options {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 8px;
-      margin-top: 6px;
-    }
-
-    .quiz-option {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 9px 11px;
+    input {
+      width: 100%;
+      padding: 10px 14px;
       border-radius: 12px;
-      border: 2px solid rgba(140, 26, 26, 0.3);
-      background: rgba(255, 253, 248, 0.85);
+      border: 2px solid #FFFFFF;
+      background: #F2B705;
+      font-size: 1rem;
+      margin-bottom: 16px;
+      outline: none;
       color: #4a2e2b;
+    }
+
+    input::placeholder {
+      color: #4a2e2b;
+      opacity: 0.7;
+    }
+
+    input:focus {
+      border-color: #FFD23A;
+      box-shadow: 0 0 4px rgba(230, 126, 34, 0.4);
+    }
+
+    .buttons-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .btn {
+      padding: 10px 18px;
+      border-radius: 14px;
+      border: none;
+      font-size: 0.95rem;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(160, 100, 60, 0.3);
+    }
+
+    .btn-primary {
+      background: #F2B705;
+      color: #8C1A1A;
+      font-weight: bold;
+    }
+
+    .btn-secondary {
+      background: #8C1A1A;
+      color: #FFFFFF;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 14px rgba(160, 100, 60, 0.35);
+    }
+
+    .error {
+      margin-top: 10px;
+      color: #8C1A1A;
       font-size: 0.9rem;
       font-weight: 600;
-      cursor: pointer;
-      outline: none;
-      box-shadow: 0 4px 10px rgba(160, 100, 60, 0.25);
-      transition:
-        transform 0.12s ease,
-        box-shadow 0.12s ease,
-        background-color 0.18s ease,
-        border-color 0.18s ease,
-        color 0.18s ease,
-        opacity 0.18s ease;
+      min-height: 1.2em;
     }
 
-    .quiz-option:hover:not(:disabled) {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 14px rgba(160, 100, 60, 0.32);
-    }
-
-    .quiz-option:active:not(:disabled) {
-      transform: translateY(0);
-      box-shadow: 0 3px 7px rgba(160, 100, 60, 0.3);
-    }
-
-    .option-letter {
-      width: 22px;
-      height: 22px;
-      border-radius: 999px;
-      background: rgba(242, 183, 5, 0.8);
-      color: #8C1A1A;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .note {
+      margin-top: 10px;
       font-size: 0.8rem;
-      flex-shrink: 0;
-    }
-
-    .option-text {
-      flex: 1;
-      text-align: left;
-    }
-
-    .quiz-option.correct {
-      background: #2e7d32;
-      border-color: #1b5e20;
-      color: #fdfcf6;
-    }
-
-    .quiz-option.wrong {
-      background: #c62828;
-      border-color: #8e0000;
-      color: #fff7f5;
-      opacity: 0.9;
-    }
-
-    .quiz-option.correct.highlight {
-      background: #66bb6a;
-      color: #fdfdf8;
-      animation: correct-glow 0.9s ease-out 0s 1;
-    }
-
-    @keyframes correct-glow {
-      0% {
-        box-shadow: 0 0 0 rgba(129, 199, 132, 0);
-      }
-      40% {
-        box-shadow: 0 0 22px rgba(129, 199, 132, 0.9);
-      }
-      100% {
-        box-shadow: 0 0 0 rgba(129, 199, 132, 0);
-      }
-    }
-
-    .quiz-option:disabled {
-      cursor: default;
+      color: #7b4b42;
     }
 
     @media (max-width: 900px) {
-      body {
-        align-items: stretch;
-      }
-
       .layout-row {
         flex-direction: column;
-        padding-top: 30px;
       }
 
       .logo-side {
@@ -366,168 +180,181 @@
       }
 
       .card {
-        padding: 36px 22px;
-      }
-
-      .menu-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .quiz-options {
-        grid-template-columns: 1fr;
+        width: 90%;
+        margin: 0 auto;
       }
     }
   </style>
 </head>
 <body>
-  <a href="index.html" class="odali-logo-link">
-  <img src="logo_proto_odali.png" alt="odali logo" class="odali-logo">
-  </a>
 
   <div class="layout-row">
-    <img src="logo_proto_odali.png" alt="Odali Logo Prototyp" class="logo-side">
+    <a href="index.html" class="odali-logo-link">
+    <img src="logo_proto_odali2.png" alt="Odali Logo 2" class="logo-side">
+    </a>
+
 
     <div class="center">
       <div class="card">
         <div class="badge">odali · hyrja</div>
 
-        <!-- Account-Bar -->
-        <div class="account-bar">
-          <span id="accountStatus" class="account-status">
-            S'je i kyqun. Mundesh me hy n'odë.
-          </span>
-          <a href="login.html" id="accountButton" class="account-btn">
-            kyqu / krijo account
-          </a>
+        <!-- Logout-Box (nur sichtbar, wenn eingeloggt) -->
+        <div id="logoutBox" class="logout-box">
+          <span id="logoutInfo" class="logout-info"></span>
+          <button id="logoutBtn" class="btn btn-secondary" type="button">🚪 Logout</button>
         </div>
 
-        <h1>mirë se erdhe n'odë 👋</h1>
+        <h1>kyqu n'odë</h1>
         <p class="subtitle">
-          Zgjedh qysh po don me u lidhe –
-          <strong>video-thirrje</strong>, <strong>mesazhe</strong> apo <strong>muri jonë</strong>.
+          Krijo nji <strong>account t'vet</strong> ose hync me at' qysh e ke ba ma heret.  
+          E ruajna veç <strong>username-in</strong> n'kafaz (localStorage) për me t'paraqit ma vonë.
         </p>
 
-        <div class="menu-grid">
-          <!-- Wichtig: --i = 0,1,2,3 für zeitversetzte Animation -->
-          <a href="thirrje.html" class="menu-btn" style="--i: 0;">
-            <span class="label">thirrje</span>
-            <span class="icon">📹</span>
-          </a>
+        <label for="loginUsername">username</label>
+        <input id="loginUsername" placeholder="p.sh. dona">
 
-          <!-- mesazhe-Link bekommt eine ID, href wird per JS gesetzt -->
-          <a href="#" id="mesazheLink" class="menu-btn" style="--i: 1;">
-            <span class="label">mesazhe</span>
-            <span class="icon">💬</span>
-          </a>
+        <label for="loginPassword">password</label>
+        <input id="loginPassword" type="password" placeholder="••••••••">
 
-          <a href="#" class="menu-btn" style="--i: 2;">
-            <span class="label">muri jonë</span>
-            <span class="icon">🧱</span>
-          </a>
-
-          <a href="#" class="menu-btn" style="--i: 3;">
-            <span class="label">tjerat</span>
-            <span class="icon">✨</span>
-          </a>
+        <div class="buttons-row">
+          <button id="registerBtn" class="btn btn-secondary" type="button">🆕 Account erstellen</button>
+          <button id="loginBtn" class="btn btn-primary" type="button">🚪 Einloggen</button>
         </div>
 
-        <p class="hint">
-          Tip: <strong>thirrje</strong> çon te faqja jote ekzistuese me Twilio.
-          Kur ke gati mesazhe / mur, ndërron <code>href="#"</code> me faqet tjera.
-        </p>
+        <div id="loginError" class="error"></div>
 
-        <!-- QUIZ-BANNER -->
-        <div class="quiz-banner">
-          <p class="quiz-question">
-            Kush e ka shkrujt libren e par&#235; n&#235; gjuh&#235;n shqipe?
-          </p>
-          <div class="quiz-options">
-            <button class="quiz-option" data-correct="false">
-              <span class="option-letter">A</span>
-              <span class="option-text">Naim Frashëri</span>
-            </button>
-
-            <button class="quiz-option" data-correct="true">
-              <span class="option-letter">B</span>
-              <span class="option-text">Gjon Buzuku</span>
-            </button>
-
-            <button class="quiz-option" data-correct="false">
-              <span class="option-letter">C</span>
-              <span class="option-text">Fero Fera</span>
-            </button>
-
-            <button class="quiz-option" data-correct="false">
-              <span class="option-letter">D</span>
-              <span class="option-text">Anton Çeta</span>
-            </button>
-          </div>
+        <div class="note">
+          Tip: Username ruhet gjithmonë me shkronja t'vogla. <br>
+          p.sh. "Dona" → "dona" (për shoqni & thirrje).
         </div>
-
       </div>
     </div>
 
-    <img src="logo_proto_odali2.png" alt="Odali Logo Prototyp 2" class="logo-side">
+    <img src="logo_proto_odali2.png" alt="Odali Logo 2" class="logo-side">
   </div>
 
   <script>
-    // Quiz-Logik
-    document.addEventListener('DOMContentLoaded', function () {
-      const options = Array.from(document.querySelectorAll('.quiz-option'));
-      if (!options.length) return;
+    const BACKEND_BASE_URL = 'https://odali-token-server.onrender.com'; // ggf. anpassen
 
-      let quizFinished = false;
+    const loginBtn = document.getElementById('loginBtn');
+    const registerBtn = document.getElementById('registerBtn');
+    const usernameInput = document.getElementById('loginUsername');
+    const passwordInput = document.getElementById('loginPassword');
+    const loginError = document.getElementById('loginError');
 
-      options.forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          if (quizFinished) return;
-          quizFinished = true;
+    const logoutBox = document.getElementById('logoutBox');
+    const logoutInfo = document.getElementById('logoutInfo');
+    const logoutBtn = document.getElementById('logoutBtn');
 
-          const clickedIsCorrect = btn.getAttribute('data-correct') === 'true';
+    function showError(msg) {
+      loginError.textContent = msg || "";
+    }
 
-          options.forEach(function (opt) {
-            const isCorrect = opt.getAttribute('data-correct') === 'true';
+    function getRedirectTarget() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('redirect') || 'index.html';
+    }
 
-            opt.disabled = true;
-
-            if (isCorrect) {
-              opt.classList.add('correct');
-              if (!clickedIsCorrect) {
-                opt.classList.add('highlight');
-              }
-            } else {
-              opt.classList.add('wrong');
-            }
-          });
-        });
-      });
-    });
-
-    // Account-Status + Mesazhe-Link aus localStorage steuern
-    document.addEventListener('DOMContentLoaded', function () {
-      const statusEl = document.getElementById('accountStatus');
-      const btnEl = document.getElementById('accountButton');
-      const mesazheLink = document.getElementById('mesazheLink');
-
-      const stored = localStorage.getItem('odaliUser');
-
-      if (stored) {
-        const name = stored.trim();
-        statusEl.textContent = `kyqur si: ${name}`;
-        btnEl.textContent = 'ndrysho / ndëro account';
-
-        // eingeloggt → direkt zu mesazhe.html
-        if (mesazheLink) {
-          mesazheLink.href = 'mesazhe.html';
-        }
+    // Beim Laden prüfen, ob schon jemand eingeloggt ist
+    (function initLoginPage() {
+      const storedUser = localStorage.getItem('odaliUser');
+      if (storedUser) {
+        // Logout-Box anzeigen
+        logoutBox.style.display = 'flex';
+        logoutInfo.textContent = `Aktualisht i kyqur si: ${storedUser}`;
+        // Username-Feld vorbefüllen (optional)
+        usernameInput.value = storedUser;
       } else {
-        statusEl.textContent = "S'je i kyqun. Mundesh me hy n'odë.";
-        btnEl.textContent = 'kyqu / krijo account';
+        logoutBox.style.display = 'none';
+      }
+    })();
 
-        // nicht eingeloggt → erst Login, dann zurück zu mesazhe.html
-        if (mesazheLink) {
-          mesazheLink.href = 'login.html?redirect=mesazhe.html';
+    async function doRegister() {
+      showError("");
+
+      const username = usernameInput.value.trim();
+      const password = passwordInput.value.trim();
+
+      if (!username || !password) {
+        showError("Shkruji t'dy: username edhe password.");
+        return;
+      }
+
+      try {
+        const res = await fetch(`${BACKEND_BASE_URL}/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          showError(data.error || "Gabim n'registrim.");
+          return;
         }
+
+        // username (normalisiert) vom Server
+        localStorage.setItem('odaliUser', data.username);
+
+        // Weiterleiten zur ursprünglichen Seite oder index.html
+        window.location.href = getRedirectTarget();
+      } catch (err) {
+        console.error(err);
+        showError("S'po munem me u lidh me serverin.");
+      }
+    }
+
+    async function doLogin() {
+      showError("");
+
+      const username = usernameInput.value.trim();
+      const password = passwordInput.value.trim();
+
+      if (!username || !password) {
+        showError("Shkruji t'dy: username edhe password.");
+        return;
+      }
+
+      try {
+        const res = await fetch(`${BACKEND_BASE_URL}/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          showError(data.error || 'Gabim me login.');
+          return;
+        }
+
+        localStorage.setItem('odaliUser', data.username);
+
+        // Weiterleiten zur ursprünglichen Seite oder index.html
+        window.location.href = getRedirectTarget();
+      } catch (err) {
+        console.error(err);
+        showError("S'po munem me u lidh me serverin.");
+      }
+    }
+
+    function doLogout() {
+      // Nur lokal "ausloggen"
+      localStorage.removeItem('odaliUser');
+      showError("");
+      usernameInput.value = '';
+      passwordInput.value = '';
+      logoutBox.style.display = 'none';
+    }
+
+    // Event-Listener
+    registerBtn.addEventListener('click', doRegister);
+    loginBtn.addEventListener('click', doLogin);
+    logoutBtn.addEventListener('click', doLogout);
+
+    passwordInput.addEventListener('keyup', (ev) => {
+      if (ev.key === 'Enter') {
+        doLogin();
       }
     });
   </script>
