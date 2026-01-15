@@ -187,8 +187,8 @@
         <input id="loginPassword" type="password" placeholder="••••••••">
 
         <div class="buttons-row">
-          <button id="registerBtn" class="btn btn-secondary">🆕 Account erstellen</button>
-          <button id="loginBtn" class="btn btn-primary">🚪 Einloggen</button>
+          <button id="registerBtn" class="btn btn-secondary" type="button">🆕 Account erstellen</button>
+          <button id="loginBtn" class="btn btn-primary" type="button">🚪 Einloggen</button>
         </div>
 
         <div id="loginError" class="error"></div>
@@ -216,6 +216,11 @@
       loginError.textContent = msg || "";
     }
 
+    function getRedirectTarget() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('redirect') || 'index.html';
+    }
+
     async function doRegister() {
       showError("");
 
@@ -236,13 +241,15 @@
 
         const data = await res.json();
         if (!res.ok) {
-          showError(data.error || 'Gabim n\'registrim.');
+          showError(data.error || "Gabim n'registrim.");
           return;
         }
 
-        // username (normalisiert, klein) kommt vom Server zurück
+        // username (normalisiert) vom Server
         localStorage.setItem('odaliUser', data.username);
-        window.location.href = 'index.html';
+
+        // Weiterleiten zur ursprünglichen Seite oder index.html
+        window.location.href = getRedirectTarget();
       } catch (err) {
         console.error(err);
         showError("S'po munem me u lidh me serverin.");
@@ -274,15 +281,16 @@
         }
 
         localStorage.setItem('odaliUser', data.username);
-        window.location.href = 'index.html';
+
+        // Weiterleiten zur ursprünglichen Seite oder index.html
+        window.location.href = getRedirectTarget();
       } catch (err) {
+        console.error(err);
+        showError("S'po munem me u lidh me serverin.");
       }
     }
 
-  function getRedirectTarget() {
-    const params = new URLSearchParams(window.location.search);
-    return params.get('redirect') || 'index.html';
-
+    // Event-Listener
     registerBtn.addEventListener('click', doRegister);
     loginBtn.addEventListener('click', doLogin);
 
@@ -291,13 +299,8 @@
         doLogin();
       }
     });
-
-    localStorage.setItem('odali_username', data.username);
-    localStorage.setItem('odali_token', data.username);
-
-    // Weiterleiten zur ursprünglichen Seite oder zur index.html
-    window.location.href = getRedirectTarget();
-  }
   </script>
 </body>
 </html>
+
+
