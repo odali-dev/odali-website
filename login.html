@@ -63,6 +63,25 @@
       margin-bottom: 10px;
     }
 
+    /* Logout-Box */
+    .logout-box {
+      display: none; /* wird per JS auf flex gesetzt */
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: rgba(242, 183, 5, 0.18);
+      border: 1px solid rgba(242, 183, 5, 0.6);
+      font-size: 0.85rem;
+      color: #7b4b42;
+    }
+
+    .logout-info {
+      flex: 1;
+    }
+
     h1 {
       margin: 0 0 8px;
       font-size: clamp(2rem, 4vw, 2.4rem);
@@ -174,6 +193,13 @@
     <div class="center">
       <div class="card">
         <div class="badge">odali · hyrja</div>
+
+        <!-- Logout-Box (nur sichtbar, wenn eingeloggt) -->
+        <div id="logoutBox" class="logout-box">
+          <span id="logoutInfo" class="logout-info"></span>
+          <button id="logoutBtn" class="btn btn-secondary" type="button">🚪 Logout</button>
+        </div>
+
         <h1>kyqu n'odë</h1>
         <p class="subtitle">
           Krijo nji <strong>account t'vet</strong> ose hync me at' qysh e ke ba ma heret.  
@@ -212,6 +238,10 @@
     const passwordInput = document.getElementById('loginPassword');
     const loginError = document.getElementById('loginError');
 
+    const logoutBox = document.getElementById('logoutBox');
+    const logoutInfo = document.getElementById('logoutInfo');
+    const logoutBtn = document.getElementById('logoutBtn');
+
     function showError(msg) {
       loginError.textContent = msg || "";
     }
@@ -220,6 +250,20 @@
       const params = new URLSearchParams(window.location.search);
       return params.get('redirect') || 'index.html';
     }
+
+    // Beim Laden prüfen, ob schon jemand eingeloggt ist
+    (function initLoginPage() {
+      const storedUser = localStorage.getItem('odaliUser');
+      if (storedUser) {
+        // Logout-Box anzeigen
+        logoutBox.style.display = 'flex';
+        logoutInfo.textContent = `Aktualisht i kyqur si: ${storedUser}`;
+        // Username-Feld vorbefüllen (optional)
+        usernameInput.value = storedUser;
+      } else {
+        logoutBox.style.display = 'none';
+      }
+    })();
 
     async function doRegister() {
       showError("");
@@ -290,9 +334,19 @@
       }
     }
 
+    function doLogout() {
+      // Nur lokal "ausloggen"
+      localStorage.removeItem('odaliUser');
+      showError("");
+      usernameInput.value = '';
+      passwordInput.value = '';
+      logoutBox.style.display = 'none';
+    }
+
     // Event-Listener
     registerBtn.addEventListener('click', doRegister);
     loginBtn.addEventListener('click', doLogin);
+    logoutBtn.addEventListener('click', doLogout);
 
     passwordInput.addEventListener('keyup', (ev) => {
       if (ev.key === 'Enter') {
@@ -302,5 +356,3 @@
   </script>
 </body>
 </html>
-
-
