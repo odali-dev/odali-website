@@ -232,6 +232,11 @@
   <script>
     const BACKEND_BASE_URL = 'https://odali-token-server.onrender.com'; // ggf. anpassen
 
+    // Keys, die auch mesazhe.html erwartet
+    const USERNAME_KEY = 'odali_username';
+    const TOKEN_KEY = 'odali_token';
+    const LEGACY_USER_KEY = 'odaliUser'; // alter Name, falls woanders benutzt
+
     const loginBtn = document.getElementById('loginBtn');
     const registerBtn = document.getElementById('registerBtn');
     const usernameInput = document.getElementById('loginUsername');
@@ -246,19 +251,46 @@
       loginError.textContent = msg || "";
     }
 
+    // Wohin nach Login/Registrierung?
     function getRedirectTarget() {
       const params = new URLSearchParams(window.location.search);
-      return params.get('redirect') || 'index.html';
+      // Standard: direkt zur Chat-Seite
+      return params.get('redirect') || 'mesazhe.html';
+    }
+
+    function setLoggedInUser(username) {
+      const normalized = (username || '').trim().toLowerCase();
+      if (!normalized) return;
+
+      // neue Keys (für mesazhe.html)
+      localStorage.setItem(USERNAME_KEY, normalized);
+      localStorage.setItem(TOKEN_KEY, normalized); // "Token = Username" – simpel gehalten
+
+      // alter Key für Abwärtskompatibilität
+      localStorage.setItem(LEGACY_USER_KEY, normalized);
+    }
+
+    function getLoggedInUser() {
+      // bevorzugt neuen Key, fallback auf alten
+      return (
+        localStorage.getItem(USERNAME_KEY) ||
+        localStorage.getItem(LEGACY_USER_KEY) ||
+        null
+      );
+    }
+
+    function clearLoggedInUser() {
+      localStorage.removeItem(USERNAME_KEY);
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(LEGACY_USER_KEY);
     }
 
     // Beim Laden prüfen, ob schon jemand eingeloggt ist
     (function initLoginPage() {
-      const storedUser = localStorage.getItem('odaliUser');
+      const storedUser = getLoggedInUser();
       if (storedUser) {
-        // Logout-Box anzeigen
         logoutBox.style.display = 'flex';
-        logoutInfo.textContent = `Aktualisht i kyqur si: ${storedUser}`;
-        // Username-Feld vorbefüllen (optional)
+        logoutInfo.textContent = `Aktualisht i kyçur si: ${storedUser}`;
         usernameInput.value = storedUser;
       } else {
         logoutBox.style.display = 'none';
@@ -268,8 +300,9 @@
     async function doRegister() {
       showError("");
 
-      const username = usernameInput.value.trim();
+      const usernameRaw = usernameInput.value.trim();
       const password = passwordInput.value.trim();
+      const username = usernameRaw.toLowerCase();
 
       if (!username || !password) {
         showError("Shkruji t'dy: username edhe password.");
@@ -289,10 +322,10 @@
           return;
         }
 
-        // username (normalisiert) vom Server
-        localStorage.setItem('odaliUser', data.username);
+        const serverUsername = (data.username || username).toLowerCase();
+        setLoggedInUser(serverUsername);
 
-        // Weiterleiten zur ursprünglichen Seite oder index.html
+        // Weiterleiten zur ursprünglichen Seite oder mesazhe.html
         window.location.href = getRedirectTarget();
       } catch (err) {
         console.error(err);
@@ -303,8 +336,9 @@
     async function doLogin() {
       showError("");
 
-      const username = usernameInput.value.trim();
+      const usernameRaw = usernameInput.value.trim();
       const password = passwordInput.value.trim();
+      const username = usernameRaw.toLowerCase();
 
       if (!username || !password) {
         showError("Shkruji t'dy: username edhe password.");
@@ -324,9 +358,10 @@
           return;
         }
 
-        localStorage.setItem('odaliUser', data.username);
+        const serverUsername = (data.username || username).toLowerCase();
+        setLoggedInUser(serverUsername);
 
-        // Weiterleiten zur ursprünglichen Seite oder index.html
+        // Weiterleiten zur ursprünglichen Seite oder mesazhe.html
         window.location.href = getRedirectTarget();
       } catch (err) {
         console.error(err);
@@ -335,8 +370,7 @@
     }
 
     function doLogout() {
-      // Nur lokal "ausloggen"
-      localStorage.removeItem('odaliUser');
+      clearLoggedInUser();
       showError("");
       usernameInput.value = '';
       passwordInput.value = '';
