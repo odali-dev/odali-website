@@ -289,6 +289,11 @@
         doLogin();
       }
     });
+
+    // Antwort vom Server: { username: 'deinname' }
+    localStorage.setItem('odali_username', username);
+    localStorage.setItem('odali_token', username); // Token = username
+
   </script>
 </body>
 </html>
