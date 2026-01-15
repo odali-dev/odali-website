@@ -276,10 +276,12 @@
         localStorage.setItem('odaliUser', data.username);
         window.location.href = 'index.html';
       } catch (err) {
-        console.error(err);
-        showError("S'po munem me u lidh me serverin.");
       }
     }
+
+  function getRedirectTarget() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('redirect') || 'index.html';
 
     registerBtn.addEventListener('click', doRegister);
     loginBtn.addEventListener('click', doLogin);
@@ -290,10 +292,12 @@
       }
     });
 
-    // Antwort vom Server: { username: 'deinname' }
-    localStorage.setItem('odali_username', username);
-    localStorage.setItem('odali_token', username); // Token = username
+    localStorage.setItem('odali_username', data.username);
+    localStorage.setItem('odali_token', data.username);
 
+    // Weiterleiten zur ursprünglichen Seite oder zur index.html
+    window.location.href = getRedirectTarget();
+  }
   </script>
 </body>
 </html>
