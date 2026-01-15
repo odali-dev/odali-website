@@ -912,18 +912,28 @@
     // ==========================
 
     function initAuth() {
-      // *** geändert: benutze überall die Konstanten
-      authToken = localStorage.getItem(TOKEN_KEY);
-      currentUser = localStorage.getItem(USERNAME_KEY);
+        authToken = localStorage.getItem(TOKEN_KEY);
+        currentUser = localStorage.getItem(USERNAME_KEY);
 
-      if (!authToken || !currentUser) {
-        // wenn nicht eingeloggt, zurück zur login-Seite
-        window.location.href = 'login.html';
+        if (!authToken || !currentUser) {
+        currentUserLabel.textContent = "S'jeni të kyçur";
+    
+        messagesEl.innerHTML = `
+        <div class="system-message">
+        Ju lutem të kyçeni së pari.
+        </div>
+    `   ;
+
+        // Chat-Eingabe deaktivieren
+        messageInputEl.disabled = true;
+        sendBtnEl.disabled = true;
+
+        // Kontakte und Polling nicht starten
         return false;
-      }
+        }
 
-      currentUserLabel.textContent = currentUser;
-      return true;
+        currentUserLabel.textContent = currentUser;
+        return true;
     }
 
     function initEvents() {
