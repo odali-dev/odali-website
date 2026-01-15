@@ -387,7 +387,7 @@
       <div class="card">
         <div class="badge">odali · hyrja</div>
 
-        <!-- NEU: Account-Bar -->
+        <!-- Account-Bar -->
         <div class="account-bar">
           <span id="accountStatus" class="account-status">
             S'je i kyqun. Mundesh me hy n'odë.
@@ -410,7 +410,8 @@
             <span class="icon">📹</span>
           </a>
 
-          <a href="mesazhelink" class="menu-btn" style="--i: 1;">
+          <!-- mesazhe-Link bekommt eine ID, href wird per JS gesetzt -->
+          <a href="#" id="mesazheLink" class="menu-btn" style="--i: 1;">
             <span class="label">mesazhe</span>
             <span class="icon">💬</span>
           </a>
@@ -498,34 +499,33 @@
       });
     });
 
-    // Account-Status aus localStorage anzeigen
+    // Account-Status + Mesazhe-Link aus localStorage steuern
     document.addEventListener('DOMContentLoaded', function () {
       const statusEl = document.getElementById('accountStatus');
       const btnEl = document.getElementById('accountButton');
+      const mesazheLink = document.getElementById('mesazheLink');
 
       const stored = localStorage.getItem('odaliUser');
+
       if (stored) {
         const name = stored.trim();
         statusEl.textContent = `kyqur si: ${name}`;
         btnEl.textContent = 'ndrysho / ndëro account';
+
+        // eingeloggt → direkt zu mesazhe.html
+        if (mesazheLink) {
+          mesazheLink.href = 'mesazhe.html';
+        }
       } else {
         statusEl.textContent = "S'je i kyqun. Mundesh me hy n'odë.";
         btnEl.textContent = 'kyqu / krijo account';
+
+        // nicht eingeloggt → erst Login, dann zurück zu mesazhe.html
+        if (mesazheLink) {
+          mesazheLink.href = 'login.html?redirect=mesazhe.html';
+        }
       }
     });
-  </script>
-
-  <script>
-    const username = localStorage.getItem('odali_username');
-    const token = localStorage.getItem('odali_token');
-
-    // Wenn eingeloggt → Mesazhe-Link aktiv lassen
-    if (username && token) {
-    document.getElementById('mesazheLink').href = 'mesazhe.html';
-    } else {
-    // sonst → Login-Seite
-    document.getElementById('mesazheLink').href = 'login.html?redirect=mesazhe';
-    }
   </script>
 
 </body>
