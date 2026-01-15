@@ -410,7 +410,7 @@
             <span class="icon">📹</span>
           </a>
 
-          <a href="mesazhe.html" class="menu-btn" style="--i: 1;">
+          <a href="mesazhelink" class="menu-btn" style="--i: 1;">
             <span class="label">mesazhe</span>
             <span class="icon">💬</span>
           </a>
@@ -514,5 +514,19 @@
       }
     });
   </script>
+
+  <script>
+    const username = localStorage.getItem('odali_username');
+    const token = localStorage.getItem('odali_token');
+
+    // Wenn eingeloggt → Mesazhe-Link aktiv lassen
+    if (username && token) {
+    document.getElementById('mesazheLink').href = 'mesazhe.html';
+    } else {
+    // sonst → Login-Seite
+    document.getElementById('mesazheLink').href = 'login.html?redirect=mesazhe';
+    }
+  </script>
+
 </body>
 </html>
