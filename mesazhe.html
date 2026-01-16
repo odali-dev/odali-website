@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
   <meta charset="UTF-8" />
   <title>odali – Mesazhe</title>
@@ -402,8 +403,275 @@
     </main>
   </div>
 
-  <!-- Dein JS bleibt unverändert -->
-  <script src="mesazhe.js"></script>
+  <!-- Inline-JS: Kontakte laden + Chat-Logik -->
+  <script>
+    // Gleiche Base-URL wie in login.html / thirrje.html
+    const BACKEND_BASE_URL = "https://odali-token-server.onrender.com";
+
+    // DOM-Elemente
+    const currentUserLabel = document.getElementById("currentUserLabel");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    const searchInput = document.getElementById("searchInput");
+    const contactListEl = document.getElementById("contactList");
+
+    const chatContactAvatar = document.getElementById("chatContactAvatar");
+    const chatContactName = document.getElementById("chatContactName");
+    const chatContactStatus = document.getElementById("chatContactStatus");
+    const messageCountEl = document.getElementById("messageCount");
+
+    const messagesEl = document.getElementById("messages");
+    const messageInput = document.getElementById("messageInput");
+    const sendBtn = document.getElementById("sendBtn");
+
+    // Zustand
+    let currentUser = null;
+    let allContacts = [];
+    let selectedContact = null;
+
+    // --- Helper für Message-Speicher in localStorage ---
+
+    function makeConversationKey(a, b) {
+      const aClean = (a || "").trim().toLowerCase();
+      const bClean = (b || "").trim().toLowerCase();
+      const ordered = [aClean, bClean].sort();
+      return `odaliMessages:${ordered[0]}|${ordered[1]}`;
+    }
+
+    function loadMessagesFor(contactName) {
+      if (!currentUser || !contactName) return [];
+      const key = makeConversationKey(currentUser, contactName);
+      const raw = localStorage.getItem(key);
+      if (!raw) return [];
+      try {
+        const arr = JSON.parse(raw);
+        if (Array.isArray(arr)) return arr;
+        return [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveMessagesFor(contactName, msgs) {
+      if (!currentUser || !contactName) return;
+      const key = makeConversationKey(currentUser, contactName);
+      localStorage.setItem(key, JSON.stringify(msgs || []));
+    }
+
+    // --- UI: Nachrichten anzeigen ---
+
+    function renderMessages(contactName) {
+      const msgs = loadMessagesFor(contactName);
+      messagesEl.innerHTML = "";
+
+      if (!msgs.length) {
+        const div = document.createElement("div");
+        div.className = "system-message";
+        div.textContent = "Filloni bisedën 👋";
+        messagesEl.appendChild(div);
+        messageCountEl.textContent = "0";
+        return;
+      }
+
+      msgs.forEach(msg => {
+        const row = document.createElement("div");
+        row.className = "message-row";
+        if (msg.from === currentUser) {
+          row.classList.add("me");
+        }
+
+        const bubble = document.createElement("div");
+        bubble.className = "message-bubble";
+        bubble.textContent = msg.text;
+
+        row.appendChild(bubble);
+        messagesEl.appendChild(row);
+      });
+
+      messageCountEl.textContent = String(msgs.length);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    // --- Kontakte vom Backend holen ---
+
+    async function fetchContacts() {
+      if (!currentUser) return [];
+
+      try {
+        const res = await fetch(
+          `${BACKEND_BASE_URL}/friends?username=${encodeURIComponent(currentUser)}`
+        );
+        const data = await res.json();
+
+        if (res.ok && data && Array.isArray(data.friends)) {
+          return data.friends;
+        }
+
+        console.error("Fehler beim Laden der Kontakte:", data);
+        return [];
+      } catch (err) {
+        console.error("Fehler beim Laden der Kontakte:", err);
+        return [];
+      }
+    }
+
+    function renderContacts(list) {
+      contactListEl.innerHTML = "";
+
+      if (!list.length) {
+        const p = document.createElement("p");
+        p.textContent = "S’ka shokë të pranuar. Shto shokë te thirrje.";
+        contactListEl.appendChild(p);
+        return;
+      }
+
+      list.forEach(name => {
+        const div = document.createElement("div");
+        div.className = "contact";
+        div.dataset.name = name;
+
+        div.innerHTML = `
+          <div class="contact-avatar">
+            ${name.charAt(0).toUpperCase()}
+          </div>
+          <div>
+            <div class="contact-name">${name}</div>
+            <div class="contact-last">Kliko për me bisedu</div>
+          </div>
+        `;
+
+        div.addEventListener("click", () => {
+          openChatWith(name);
+        });
+
+        contactListEl.appendChild(div);
+      });
+    }
+
+    async function loadContacts() {
+      const contacts = await fetchContacts();
+      allContacts = contacts;
+      renderContacts(contacts);
+      applySearchFilter();
+    }
+
+    // --- Suche / Filter ---
+
+    function applySearchFilter() {
+      const term = (searchInput.value || "").trim().toLowerCase();
+      const contactDivs = contactListEl.querySelectorAll(".contact");
+
+      contactDivs.forEach(div => {
+        const name = (div.dataset.name || "").toLowerCase();
+        if (!term || name.includes(term)) {
+          div.style.display = "";
+        } else {
+          div.style.display = "none";
+        }
+      });
+    }
+
+    // --- Chat öffnen ---
+
+    function openChatWith(name) {
+      selectedContact = name;
+
+      const contactDivs = contactListEl.querySelectorAll(".contact");
+      contactDivs.forEach(div => {
+        if (div.dataset.name === name) {
+          div.classList.add("active");
+        } else {
+          div.classList.remove("active");
+        }
+      });
+
+      chatContactAvatar.textContent = name.charAt(0).toUpperCase();
+      chatContactName.textContent = name;
+      chatContactStatus.textContent = "Duke biseduar…";
+
+      renderMessages(name);
+      updateSendButtonState();
+    }
+
+    // --- Nachricht senden ---
+
+    function sendMessage() {
+      if (!currentUser || !selectedContact) return;
+
+      const text = (messageInput.value || "").trim();
+      if (!text) return;
+
+      const msgs = loadMessagesFor(selectedContact);
+      msgs.push({
+        from: currentUser,
+        text,
+        time: Date.now()
+      });
+
+      saveMessagesFor(selectedContact, msgs);
+      renderMessages(selectedContact);
+
+      messageInput.value = "";
+      updateSendButtonState();
+    }
+
+    function updateSendButtonState() {
+      const text = (messageInput.value || "").trim();
+      if (selectedContact && text.length > 0) {
+        sendBtn.disabled = false;
+      } else {
+        sendBtn.disabled = true;
+      }
+    }
+
+    // --- Login / Logout ---
+
+    function initUserFromLocalStorage() {
+      const stored = localStorage.getItem("odaliUser");
+      if (stored) {
+        currentUser = stored.trim().toLowerCase();
+        currentUserLabel.textContent = `kyqur si: ${currentUser}`;
+      } else {
+        currentUser = null;
+        currentUserLabel.textContent = "S'je i kyqun.";
+      }
+    }
+
+    function doLogout() {
+      localStorage.removeItem("odaliUser");
+      window.location.href = "login.html?redirect=mesazhe.html";
+    }
+
+    // --- Init ---
+
+    document.addEventListener("DOMContentLoaded", () => {
+      initUserFromLocalStorage();
+
+      // wenn niemand eingeloggt -> zurück zum Login
+      if (!currentUser) {
+        window.location.href = "login.html?redirect=mesazhe.html";
+        return;
+      }
+
+      logoutBtn.addEventListener("click", doLogout);
+
+      searchInput.addEventListener("input", applySearchFilter);
+
+      messageInput.addEventListener("input", updateSendButtonState);
+      messageInput.addEventListener("keydown", ev => {
+        if (ev.key === "Enter" && !ev.shiftKey) {
+          ev.preventDefault();
+          if (!sendBtn.disabled) {
+            sendMessage();
+          }
+        }
+      });
+
+      sendBtn.addEventListener("click", sendMessage);
+
+      loadContacts();
+    });
+  </script>
 
 </body>
 </html>
