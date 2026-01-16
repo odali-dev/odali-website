@@ -446,7 +446,8 @@
 
     function doLogout() {
       localStorage.removeItem("odaliUser");
-      window.location.href = "login.html?redirect=mesazhe.html";
+      // optional: zurück zur Startseite
+      window.location.href = "index.html";
     }
 
     // ------- Messages in localStorage -------
@@ -657,7 +658,7 @@
 
     function updateSendButtonState() {
       const text = (messageInput.value || "").trim();
-      if (selectedContact && text.length > 0) {
+      if (selectedContact && text.length > 0 && currentUser) {
         sendBtn.disabled = false;
       } else {
         sendBtn.disabled = true;
@@ -709,11 +710,8 @@
     document.addEventListener("DOMContentLoaded", () => {
       initUserFromLocalStorage();
 
-      // niemand eingeloggt? -> zum Login
-     // if (!currentUser) {
-       / window.location.href = "login.html?redirect=mesazhe.html";
-       // return;
-      //}
+      // WICHTIG: Kein Redirect mehr auf login.html.
+      // So lädt die Seite auch, wenn noch kein odaliUser gesetzt ist.
 
       logoutBtn.addEventListener("click", doLogout);
 
@@ -739,3 +737,4 @@
 </body>
 
 </html>
+
