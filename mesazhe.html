@@ -326,6 +326,42 @@
       transform: none;
     }
 
+        .add-friend {
+      margin-top: 0.8rem;
+      display: flex;
+      gap: 0.4rem;
+    }
+
+    .add-friend input {
+      flex: 1;
+      padding: 0.45rem 0.7rem;
+      border: 2px solid var(--border);
+      border-radius: 999px;
+      background: #fffdf8;
+      color: var(--text);
+      font-size: 0.85rem;
+      outline: none;
+      box-shadow: inset 0 1px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .add-friend button {
+      border-radius: 999px;
+      border: 2px solid var(--accent-dark);
+      background: var(--accent);
+      color: var(--text);
+      padding: 0.35rem 0.9rem;
+      cursor: pointer;
+      font-weight: 700;
+      box-shadow: 0 3px 8px var(--shadow);
+      transition: 0.15s ease;
+    }
+
+    .add-friend button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px var(--shadow);
+      background: var(--accent-dark);
+    }
+
     /* MOBILE */
     @media (max-width: 768px) {
       .app {
