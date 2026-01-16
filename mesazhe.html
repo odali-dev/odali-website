@@ -410,6 +410,11 @@
   <script>
     const BACKEND_BASE_URL = "https://odali-token-server.onrender.com";
 
+    const socket = io("https://odali-token-server.onrender.com");
+    socket.emit("register", { username: "mario" });
+    socket.emit("chatMessage", { from, to, text });
+    socket.on("chatMessage", data => console.log("Neue Nachricht:", data));
+
     // DOM-Elemente
     const currentUserLabel = document.getElementById("currentUserLabel");
     const logoutBtn = document.getElementById("logoutBtn");
