@@ -457,6 +457,9 @@
     const searchInput = document.getElementById("searchInput");
     const contactListEl = document.getElementById("contactList");
 
+    const addFriendInput = document.getElementById("addFriendInput");
+    const addFriendBtn = document.getElementById("addFriendBtn");
+
     const chatContactAvatar = document.getElementById("chatContactAvatar");
     const chatContactName = document.getElementById("chatContactName");
     const chatContactStatus = document.getElementById("chatContactStatus");
@@ -615,6 +618,43 @@
       applySearchFilter();
     }
 
+     function handleAddFriend() {
+      if (!currentUser) return;
+
+      const rawName = (addFriendInput.value || "").trim().toLowerCase();
+      if (!rawName) return;
+
+      // sich selbst nicht hinzufügen
+      if (rawName === currentUser) {
+        alert("S'mundesh me shtu veten si shok 😄");
+        return;
+      }
+
+      // doppelte vermeiden
+      if (allContacts.includes(rawName)) {
+        openChatWith(rawName);
+        addFriendInput.value = "";
+        return;
+      }
+
+      allContacts.push(rawName);
+      renderContacts(allContacts);
+      applySearchFilter(); // damit Suchfilter weiterhin passt
+
+      // optional direkt Chat öffnen
+      openChatWith(rawName);
+
+      addFriendInput.value = "";
+
+      // TODO: hier könntest du einen API-Call machen, um es auch im Backend zu speichern
+      // z.B.:
+      // fetch(`${BACKEND_BASE_URL}/friends/add`, {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify({ username: currentUser, friend: rawName })
+      // });
+    }
+
     // ------- Suche / Filter -------
 
     function applySearchFilter() {
@@ -770,7 +810,15 @@
         }
       });
 
-      sendBtn.addEventListener("click", sendMessage);
+      addFriendBtn.addEventListener("click", handleAddFriend);
+      
+      addFriendInput.addEventListener("keydown", ev => {
+        if (ev.key === "Enter") {
+          ev.preventDefault();
+          handleAddFriend();
+        }
+      });
+
 
       loadContacts();
       initSocket();
