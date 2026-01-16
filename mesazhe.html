@@ -367,15 +367,20 @@
   <!-- APP LAYOUT -->
   <div class="app">
     <aside class="sidebar">
-      <div class="sidebar-header">
-        <h2>Kontakte</h2>
-        <p>Zgjedh dikon me shkruajtur.</p>
+            <div class="sidebar-header">
+              <h2>Kontakte</h2>
+              <p>Zgjedh dikon me shkruajtur.</p>
 
-        <div class="search">
-          <span>🔍</span>
-          <input id="searchInput" placeholder="Kërko kontaktin…" />
-        </div>
-      </div>
+              <div class="search">
+                <span>🔍</span>
+                <input id="searchInput" placeholder="Kërko kontaktin…" />
+              </div>
+
+              <div class="add-friend">
+                <input id="addFriendInput" placeholder="Shto shokun…" />
+                <button id="addFriendBtn">+</button>
+              </div>
+           </div>
 
       <div class="contacts" id="contactList"></div>
     </aside>
@@ -446,8 +451,7 @@
 
     function doLogout() {
       localStorage.removeItem("odaliUser");
-      // optional: zurück zur Startseite
-      window.location.href = "index.html";
+      window.location.href = "login.html?redirect=mesazhe.html";
     }
 
     // ------- Messages in localStorage -------
@@ -658,7 +662,7 @@
 
     function updateSendButtonState() {
       const text = (messageInput.value || "").trim();
-      if (selectedContact && text.length > 0 && currentUser) {
+      if (selectedContact && text.length > 0) {
         sendBtn.disabled = false;
       } else {
         sendBtn.disabled = true;
@@ -710,8 +714,11 @@
     document.addEventListener("DOMContentLoaded", () => {
       initUserFromLocalStorage();
 
-      // WICHTIG: Kein Redirect mehr auf login.html.
-      // So lädt die Seite auch, wenn noch kein odaliUser gesetzt ist.
+      // niemand eingeloggt? -> zum Login
+      if (!currentUser) {
+        window.location.href = "login.html?redirect=mesazhe.html";
+        return;
+      }
 
       logoutBtn.addEventListener("click", doLogout);
 
@@ -737,4 +744,3 @@
 </body>
 
 </html>
-
