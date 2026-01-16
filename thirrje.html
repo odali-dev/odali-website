@@ -33,6 +33,12 @@
       flex-shrink: 0;
     }
 
+    /* optional: Link um Logo ohne Unterstreichung */
+    .logo-link {
+      text-decoration: none;
+      display: inline-block;
+    }
+
     .container {
       flex: 1;
       max-width: 900px;
@@ -352,12 +358,12 @@
 </head>
 
 <body>
-  <a href="index.html" class="odali-logo-link">
-  <img src="logo_proto_odali.png" alt="odali logo" class="odali-logo">
-  </a>
+  <!-- kleines Logo oben entfernt; linkes großes Logo ist jetzt klickbar -->
 
   <div class="layout-row">
-    <img src="logo_proto_odali.png" alt="Odali Logo Prototyp" class="logo-side">
+    <a href="index.html" class="logo-link">
+      <img src="logo_proto_odali.png" alt="Odali Logo Prototyp" class="logo-side">
+    </a>
 
     <div class="container">
       <div class="card">
@@ -579,7 +585,6 @@
         room = null;
         currentRoomName = null;
         updateRoomHint();
-        // Buttons wieder auf "📞 thirre" umschalten
         renderFriends(lastFriendsData);
       });
     }
@@ -587,7 +592,6 @@
     function leaveRoom() {
       if (room) {
         room.disconnect();
-        // rest wird im "disconnected"-Handler erledigt
       }
     }
 
@@ -621,7 +625,6 @@
     function renderFriends(data) {
       const { friends = [], incoming = [], outgoing = [] } = data;
 
-      // Incoming Requests
       incomingRequestsEl.innerHTML = "";
       if (incoming.length) {
         const title = document.createElement('div');
@@ -643,7 +646,6 @@
         incomingRequestsEl.textContent = "S'ka hala kërkesa të reja.";
       }
 
-      // Outgoing Requests
       outgoingRequestsEl.innerHTML = "";
       if (outgoing.length) {
         const title = document.createElement('div');
@@ -660,7 +662,6 @@
         outgoingRequestsEl.textContent = "S'ke hala kërkesa t'dërguara (ose veç jon pranu).";
       }
 
-      // Friends (accepted)
       friendsListEl.innerHTML = "";
       if (!friends.length) {
         const li = document.createElement('li');
