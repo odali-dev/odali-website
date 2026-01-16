@@ -710,10 +710,10 @@
       initUserFromLocalStorage();
 
       // niemand eingeloggt? -> zum Login
-      if (!currentUser) {
-        window.location.href = "login.html?redirect=mesazhe.html";
-        return;
-      }
+     // if (!currentUser) {
+       / window.location.href = "login.html?redirect=mesazhe.html";
+       // return;
+      //}
 
       logoutBtn.addEventListener("click", doLogout);
 
