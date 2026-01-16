@@ -341,6 +341,9 @@
       .sidebar { width: 100%; border-right: none; border-bottom: 2px solid var(--border); }
     }
   </style>
+
+  <!-- NEU: Socket.io-Client wie in thirrje.html -->
+  <script src="https://odali-token-server.onrender.com/socket.io/socket.io.js"></script>
 </head>
 <body>
 
@@ -403,9 +406,8 @@
     </main>
   </div>
 
-  <!-- Inline-JS: Kontakte laden + Chat-Logik -->
+  <!-- JS: Kontakte, Chat-Logik & Socket.io -->
   <script>
-    // Gleiche Base-URL wie in login.html / thirrje.html
     const BACKEND_BASE_URL = "https://odali-token-server.onrender.com";
 
     // DOM-Elemente
@@ -428,6 +430,7 @@
     let currentUser = null;
     let allContacts = [];
     let selectedContact = null;
+    let socket = null; // NEU
 
     // --- Helper für Message-Speicher in localStorage ---
 
@@ -593,6 +596,42 @@
       updateSendButtonState();
     }
 
+    // --- Socket.io initialisieren ---
+
+    function initSocket() {
+      if (!currentUser || !window.io) return;
+
+      socket = io(BACKEND_BASE_URL, {
+        transports: ["websocket", "polling"]
+      });
+
+      socket.on("connect", () => {
+        // Gleicher register-Mechanismus wie in thirrje.html
+        socket.emit("register", { username: currentUser });
+      });
+
+      // Eingehende Chat-Nachricht
+      socket.on("chatMessage", ({ from, text, time }) => {
+        if (!from || !text) return;
+
+        const msgs = loadMessagesFor(from);
+        msgs.push({
+          from,
+          text,
+          time: time || Date.now()
+        });
+        saveMessagesFor(from, msgs);
+
+        // Wenn Chat mit diesem Kontakt offen ist -> sofort anzeigen
+        if (selectedContact === from) {
+          renderMessages(from);
+        } else {
+          // Optional: später Badge "unread" etc.
+          console.log("Neue Nachricht von", from, text);
+        }
+      });
+    }
+
     // --- Nachricht senden ---
 
     function sendMessage() {
@@ -601,15 +640,27 @@
       const text = (messageInput.value || "").trim();
       if (!text) return;
 
+      const now = Date.now();
+
+      // lokal speichern
       const msgs = loadMessagesFor(selectedContact);
       msgs.push({
         from: currentUser,
         text,
-        time: Date.now()
+        time: now
       });
-
       saveMessagesFor(selectedContact, msgs);
       renderMessages(selectedContact);
+
+      // über Socket an den Server schicken (wenn verbunden)
+      if (socket && socket.connected) {
+        socket.emit("chatMessage", {
+          from: currentUser,
+          to: selectedContact,
+          text,
+          time: now
+        });
+      }
 
       messageInput.value = "";
       updateSendButtonState();
@@ -669,7 +720,9 @@
 
       sendBtn.addEventListener("click", sendMessage);
 
+      // Kontakte laden & Socket verbinden
       loadContacts();
+      initSocket();
     });
   </script>
 
